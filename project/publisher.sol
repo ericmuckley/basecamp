@@ -1,48 +1,94 @@
 // SPDX-License-Identifier: UNLICENSED
 
+// TODO:
+// add totalHashes; 
+// add gethashesByCreator
+
+
 pragma solidity ^0.8.20;
+
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
 
 contract Publisher {
 
+    error HashDoesNotExist(bytes32);
+    error HashAlreadyExists(bytes32);
+
+    using EnumerableSet for EnumerableSet.AddressSet;
+
     struct Item {
-        string hash;
         string name;
-        //string dateModified;
-        uint blockCreated;
         address creator;
         string description;
+        uint blockCreated;
+        bytes32 hash;
     }
 
-    string[] public allHashes;
-    mapping(string => Item) public hashInfo;
-    mapping(address => string[]) internal itemsByCreator;
-
+    uint public totalHashes;
+    bytes32[] internal allHashes;
+    mapping(bytes32 => Item) public hashInfo;
+    mapping(address => uint) public totalHashesByAddress;
+    mapping(address => bytes32[]) public hashListByAddress;
+    EnumerableSet.AddressSet internal allCreators;
 
     function createItem (
-        string calldata _hash,
         string calldata _name,
-        string calldata _description
+        string calldata _description,
+        uint8[] calldata _inputBytes
     ) public returns (uint) {
 
-        Item memory _newItem = Item({
-            hash: _hash,
-            name: _name,
-            blockCreated: block.number,
-            creator: msg.sender,
-            description: _description
-        });
+        bytes32 _hash = keccak256(abi.encode(_inputBytes));
 
+        if (hashInfo[_hash].hash == _hash) {
+            revert HashAlreadyExists(_hash);
+        }
+
+        totalHashes ++;
         allHashes.push(_hash);
-        hashInfo[_hash] = _newItem;
-        itemsByCreator[msg.sender].push(_hash);
+        allCreators.add(msg.sender);
+        totalHashesByAddress[msg.sender]++;
+        hashListByAddress[msg.sender].push(_hash);
+        hashInfo[_hash] = Item({
+            name: _name,
+            creator: msg.sender,
+            description: _description, 
+            blockCreated: block.number,    
+            hash: _hash
+        });
 
         return allHashes.length;
     }
 
-    function getItemHashesByCreator(address _creatorAddress) public view returns (string[] memory) {
-        return itemsByCreator[_creatorAddress];
+
+
+    function getItemByHash(bytes32 _hash) public view returns (Item memory) {
+        Item memory _item = hashInfo[_hash];
+        if (_item.hash != _hash) {
+            revert HashDoesNotExist(_hash);
+        }
+        return hashInfo[_hash];
     }
 
-    
 
+    function getHashListByAddress(address _address) public view returns (bytes32[] memory) {
+        return hashListByAddress[_address];
+    }
+
+    function getAllHashes() public view returns (bytes32[] memory) {
+        return allHashes;
+    }
+
+    function getAllCreators() public view returns (address[] memory) {
+        return allCreators.values();
+    }
+
+    function getItemsByCreator(address _creatorAddress) public view returns (Item[] memory) {
+        bytes32[] memory _hashes = hashListByAddress[_creatorAddress];
+        Item[] memory _items = new Item[](_hashes.length);
+        for (uint i; i < _items.length; i++) {
+            _items[i] = hashInfo[_hashes[i]];
+        }
+        return _items;
+    }
+    
 }
