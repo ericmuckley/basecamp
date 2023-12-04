@@ -16,6 +16,7 @@ pragma solidity ^0.8.20;
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
+
 contract Publisher {
 
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -23,16 +24,16 @@ contract Publisher {
 
     struct Item {
         string name;
-        address creator;
         string description;
         uint blockCreated;
+        address creator;
         bytes32 hash;
     }
 
     event ItemCreated(Item indexed _item);
     
     mapping(bytes32 => Item) public hashInfo;
-    mapping(address => bytes32[]) public hashListByAddress;
+    mapping(address => bytes32[]) public hashListByCreator;
     EnumerableSet.AddressSet internal allCreators;
     EnumerableSet.Bytes32Set internal allHashes;
 
@@ -40,25 +41,28 @@ contract Publisher {
         string calldata _name,
         string calldata _description,
         uint8[] calldata _inputBytes
-    ) public returns (bytes32) {
+    ) public returns (bytes32 itemHash, bool itemCreated) {
 
         bytes32 _hash = keccak256(abi.encode(_inputBytes));
+
+        bool _itemCreated;
 
         if (hashInfo[_hash].hash != _hash) {
             allHashes.add(_hash);
             allCreators.add(msg.sender);
-            hashListByAddress[msg.sender].push(_hash);
+            hashListByCreator[msg.sender].push(_hash);
             Item memory _item = Item({
                 name: _name,
+                description: _description,
+                blockCreated: block.number,
                 creator: msg.sender,
-                description: _description, 
-                blockCreated: block.number,    
                 hash: _hash
             });
             hashInfo[_hash] = _item;
+            _itemCreated = true;
             emit ItemCreated(_item);
         }
-        return _hash;
+        return (_hash, _itemCreated);
     }
 
 
@@ -67,7 +71,7 @@ contract Publisher {
     }
 
     function getHashListByAddress(address _address) public view returns (bytes32[] memory) {
-        return hashListByAddress[_address];
+        return hashListByCreator[_address];
     }
 
     function getAllHashes() public view returns (bytes32[] memory) {
@@ -79,7 +83,7 @@ contract Publisher {
     }
 
     function getItemsByCreator(address _creatorAddress) public view returns (Item[] memory) {
-        bytes32[] memory _hashes = hashListByAddress[_creatorAddress];
+        bytes32[] memory _hashes = hashListByCreator[_creatorAddress];
         Item[] memory _items = new Item[](_hashes.length);
         for (uint i; i < _items.length; i++) {
             _items[i] = hashInfo[_hashes[i]];
