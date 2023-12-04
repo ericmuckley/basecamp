@@ -34,6 +34,9 @@
   "type": "module",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
-    "viem": "^1.19.11"
+    "@web3modal/ethereum": "^2.7.1",
+    "@web3modal/html": "^2.7.1",
+    "viem": "^1.19.11",
+    "wagmi": "^1.4.7"
   }
 }

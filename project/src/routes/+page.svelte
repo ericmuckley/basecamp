@@ -2,7 +2,11 @@
 	import { fly } from 'svelte/transition';
 	import Spinner from '$lib/Spinner.svelte';
 	import FileUploader from '$lib/FileUploader.svelte';
+	import { userAddress, networkId } from '$lib/stores.js';
+    import Layout from './+layout.svelte';
+    import TopNavBar from '../lib/TopNavBar.svelte';
 
+	const SUPPORTED_NETWORK_ID = 84531; // for Base Goerli chain
 	let fileObject;
 
 	const FIELDS = [
@@ -38,11 +42,20 @@
 			}
 		}
 	];
+
 </script>
 
-<h1>publish/verify</h1>
 
-{#if fileObject}
+{#if $networkId !== SUPPORTED_NETWORK_ID}
+
+	<div class="box shadow-xl shadow-indigo-600" in:fly={{ y: -80, duration: 800 }}>
+		<h3>Unsupported Network</h3>
+		<p class="lead">
+			Please switch to the Base Goerli network to use this app.
+		</p>
+	</div>
+
+{:else if fileObject}
 	<div class="box shadow-xl shadow-indigo-600" in:fly={{ y: -80, duration: 800 }}>
 		<div class="flex justify-between">
 			<h3>{fileObject.name}</h3>

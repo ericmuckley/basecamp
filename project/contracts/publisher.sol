@@ -9,6 +9,7 @@ Suggested changes from Michael
 - do we actually need all the mappings, and addresses? whats the use case
 - emit events for new item creation, then you don't need to keep track of the other indexes/mappings
 
+- event should just contain name, hash, & creator
 */
 
 pragma solidity ^0.8.20;
@@ -30,7 +31,11 @@ contract Publisher {
         bytes32 hash;
     }
 
-    event ItemCreated(Item indexed _item);
+    event ItemCreated(
+        string indexed _name,
+        address indexed _creator,
+        bytes32 indexed _hash
+    );
     
     mapping(bytes32 => Item) public hashInfo;
     mapping(address => bytes32[]) public hashListByCreator;
@@ -60,7 +65,7 @@ contract Publisher {
             });
             hashInfo[_hash] = _item;
             _itemCreated = true;
-            emit ItemCreated(_item);
+            emit ItemCreated(_name, msg.sender, _hash);
         }
         return (_hash, _itemCreated);
     }
