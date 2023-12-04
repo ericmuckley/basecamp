@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--extralightgray: #f1f5f9;
+	--lightgray: #e2e8f0;
+	--gray: #94a3b8;
+	--darkgray: #64748b;
+
+	--dark0: #0f172a;
+	--dark1: #1e293b;
+	--dark2: #082f49;
+	--dark3: #172554;
+
+	--bright: #2dd4bf;
+	--bright2: #0d9488;
+
+	--linklight: #38bdf8;
+	--link: #0284c7;
+	--link2: #075985;
+
+	--accent: #c084fc;
+}
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+	h1 {
+		@apply font-mono text-5xl mb-6 text-darkgray dark:text-extralightgray;
+	}
+	h2 {
+		@apply font-mono text-3xl text-darkgray dark:text-lightgray;
+	}
+	h3 {
+		@apply font-mono text-xl text-dark3 dark:text-gray;
+	}
+	nav {
+		@apply bg-white dark:bg-dark1 dark:bg-dark1 shadow-lg fixed w-full z-20 top-0 left-0;
+	}
+	main {
+		@apply dark:moving-bg px-10 py-24 w-full min-h-screen h-auto;
+	}
+	a {
+		@apply hovertext;
+	}
+	p {
+		@apply standard-text;
+	}
+	hr {
+		@apply border-gray dark:border-gray;
+	}
+}
+
+@layer components {
+	.standard-text {
+		@apply text-darkgray dark:text-lightgray;
+	}
+	.badge-counter {
+		@apply rounded-full bg-darkgray text-lightgray dark:bg-gray dark:text-dark0;
+	}
+
+	.box-gradient {
+		@apply bg-gradient-to-r to-extralightgray from-extralightgray dark:to-dark0 dark:via-dark3 dark:from-dark0;
+	}
+
+	.nav-item {
+		@apply text-link hover:text-link2 dark:text-gradient dark:hover:text-extralightgray;
+	}
+	.nav-item-active {
+		@apply bg-lightgray text-link2 hover:bg-lightgray dark:hover:bg-dark0 dark:text-dark0 dark:gradient-bg;
+	}
+	.menu-btn {
+		@apply hover:bg-lightgray dark:hover:bg-dark0 mt-1 w-full text-left text-bright py-4 px-6 rounded-3xl;
+	}
+
+	/* INPUT ELEMENTS */
+	.input-label {
+		@apply mb-1 text-darkgray dark:text-lightgray block;
+	}
+	.text-input {
+		@apply enabled:hover:border-linklight dark:enabled:hover:border-bright disabled:bg-lightgray dark:disabled:bg-dark2 bg-extralightgray dark:bg-dark3 border-link dark:border-bright2 text-darkgray dark:text-extralightgray border-2 rounded-full pl-5 pr-10 py-2 w-full focus:outline-none disabled:text-gray dark:disabled:text-darkgray disabled:cursor-not-allowed disabled:bg-lightgray dark:disabled:bg-dark0;
+	}
+	.select-element {
+		@apply text-input appearance-none cursor-pointer;
+	}
+
+	.token-preview-card {
+		@apply bg-darkgray shadow-lg shadow-darkgray border border-darkgray dark:shadow-accent dark:border-accent rounded-3xl w-[300px] whitespace-normal;
+	}
+	.login-button {
+		@apply font-mono rounded-full px-6 font-bold text-lightgray bg-link hover:bg-link2 dark:text-black dark:gradient-bg dark:hover:text-dark0 dark:hover:bg-gradient-to-r dark:hover:to-accent dark:hover:via-white dark:hover:from-accent;
+	}
+	.gradient-bg {
+		@apply bg-gradient-to-b to-accent from-bright;
+	}
+	.text-gradient {
+		@apply text-transparent bg-clip-text bg-gradient-to-b to-accent from-bright;
+	}
+
+	.primary-btn {
+		@apply font-mono whitespace-nowrap text-xl px-8 py-3 rounded-full text-white bg-link hover:bg-link2 dark:text-dark0 dark:bg-bright  dark:hover:bg-bright2 disabled:bg-lightgray disabled:hover:bg-lightgray dark:disabled:bg-lightgray dark:disabled:hover:bg-lightgray;
+	}
+	.secondary-btn {
+		@apply font-mono whitespace-nowrap text-xl px-8 py-3 rounded-full text-link hover:bg-lightgray hover:text-link dark:text-bright dark:hover:text-bright dark:hover:bg-dark2;
+	}
+	.box {
+		@apply rounded-3xl px-10 py-8 box-gradient border border-gray dark:border-extralightgray dark:border-accent;
+	}
+
+	.modal {
+		@apply relative transform overflow-hidden text-left shadow-xl transition-all box;
+	}
+	.modal-backdrop {
+		@apply fixed inset-0 bg-slate-100 dark:bg-indigo-950 bg-opacity-90 transition-opacity dark:bg-opacity-90 dark:transition-opacity;
+	}
+	.hovertext {
+		@apply text-link hover:text-linklight dark:text-bright dark:hover:text-bright2;
+	}
+	/* turn non-transparent parts of an image white */
+	.img-white {
+		-webkit-filter: brightness(0) invert(1);
+		filter: brightness(0) invert(1);
+	}
+
+	/* turn non-transparent parts of an image black */
+	.img-black {
+		-webkit-filter: brightness(0);
+		filter: brightness(0);
+	}
+
+	.moving-bg {
+		background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+		background-size: 400% 400%;
+		animation: gradient 5s ease infinite;
+	}
+
+	@keyframes gradient {
+		0% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+}
