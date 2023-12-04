@@ -1,20 +1,24 @@
 // SPDX-License-Identifier: UNLICENSED
 
-// TODO:
-// add totalHashes; 
-// add gethashesByCreator
+/*
 
+# Notes from Michael
+- enumerable set for all hashes, instead of array with counter
+- not error for hasExists, but maybe return true
+- do we actually need all the mappings, and addresses? whats the use case
+- emit events for new item creation, then you don't need to keep track of the other indexes/mappings
+
+*/
 
 pragma solidity ^0.8.20;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
+//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract Publisher {
 
-    error HashDoesNotExist(bytes32);
-    error HashAlreadyExists(bytes32);
-
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
 
     struct Item {
         string name;
@@ -24,58 +28,49 @@ contract Publisher {
         bytes32 hash;
     }
 
-    uint public totalHashes;
-    bytes32[] internal allHashes;
+    event ItemCreated(Item indexed _item);
+    
     mapping(bytes32 => Item) public hashInfo;
-    mapping(address => uint) public totalHashesByAddress;
     mapping(address => bytes32[]) public hashListByAddress;
     EnumerableSet.AddressSet internal allCreators;
+    EnumerableSet.Bytes32Set internal allHashes;
 
     function createItem (
         string calldata _name,
         string calldata _description,
         uint8[] calldata _inputBytes
-    ) public returns (uint) {
+    ) public returns (bytes32) {
 
         bytes32 _hash = keccak256(abi.encode(_inputBytes));
 
-        if (hashInfo[_hash].hash == _hash) {
-            revert HashAlreadyExists(_hash);
+        if (hashInfo[_hash].hash != _hash) {
+            allHashes.add(_hash);
+            allCreators.add(msg.sender);
+            hashListByAddress[msg.sender].push(_hash);
+            Item memory _item = Item({
+                name: _name,
+                creator: msg.sender,
+                description: _description, 
+                blockCreated: block.number,    
+                hash: _hash
+            });
+            hashInfo[_hash] = _item;
+            emit ItemCreated(_item);
         }
-
-        totalHashes ++;
-        allHashes.push(_hash);
-        allCreators.add(msg.sender);
-        totalHashesByAddress[msg.sender]++;
-        hashListByAddress[msg.sender].push(_hash);
-        hashInfo[_hash] = Item({
-            name: _name,
-            creator: msg.sender,
-            description: _description, 
-            blockCreated: block.number,    
-            hash: _hash
-        });
-
-        return allHashes.length;
+        return _hash;
     }
-
 
 
     function getItemByHash(bytes32 _hash) public view returns (Item memory) {
-        Item memory _item = hashInfo[_hash];
-        if (_item.hash != _hash) {
-            revert HashDoesNotExist(_hash);
-        }
         return hashInfo[_hash];
     }
-
 
     function getHashListByAddress(address _address) public view returns (bytes32[] memory) {
         return hashListByAddress[_address];
     }
 
     function getAllHashes() public view returns (bytes32[] memory) {
-        return allHashes;
+        return allHashes.values();
     }
 
     function getAllCreators() public view returns (address[] memory) {

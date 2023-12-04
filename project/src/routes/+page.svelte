@@ -58,11 +58,11 @@
 				</button>
 			</div>
 		</div>
-		<div>
-			<table>
+		<div class="mt-6">
+			<table class="border-spacing-y-4">
 				{#each FIELDS as field}
 					<tr class="text-slate-600">
-						<td class="font-bold whitespace-nowrap">{field.label}</td>
+						<td class="font-bold whitespace-nowrap pr-6">{field.label}</td>
 						<td>
 							{#if field.format}
 								{field.format(fileObject[field.field])}

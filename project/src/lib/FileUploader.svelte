@@ -1,8 +1,14 @@
 <script>
-	// 0x63250e98c8ad36b65247330947008627ecdc7542987206e2018cb5f2f9040bcf
+
+	// keccak256 for [1,2,3]: 0xbc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a
+
 	import { keccak256 } from 'viem';
 
 	export let fileObject;
+
+	let a = new Uint8Array(...[1,2,3]);
+	console.log(a);
+	console.log(keccak256(a));
 
 	const onFileSelected = (e) => {
 		let file = Array.from(e.target.files)[0];
