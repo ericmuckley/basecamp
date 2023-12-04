@@ -2,7 +2,8 @@
 
 /*
 
-# Notes from Michael
+Suggested changes from Michael
+
 - enumerable set for all hashes, instead of array with counter
 - not error for hasExists, but maybe return true
 - do we actually need all the mappings, and addresses? whats the use case
