@@ -11,13 +11,11 @@
 	console.log(keccak256(a));
 
 
-
 	const onFileSelected = (e) => {
 		let file = Array.from(e.target.files)[0];
 		let reader = new FileReader();
 		reader.onload = () => {
 			let array = new Uint8Array(reader.result);
-			array = array.slice(0, 3);
 			let hash = keccak256(array);
 			fileObject = {
 				name: file.name,

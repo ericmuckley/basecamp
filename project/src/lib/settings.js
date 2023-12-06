@@ -1,4 +1,4 @@
-export const SUPPORTED_NETWORK_ID = 84531; // for Base Goerli chain
+export const CHAIN_ID = 84531; // for Base Goerli chain
 
 export const CONTRACT_ADDRESS = "0xE8ab176402c968bfBcaCB0269593AE12F4E77b33";
 
