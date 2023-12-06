@@ -13,14 +13,14 @@
 
         <div>
             <h3 class="text-indigo-600 cursor-default">
-                publish&verify
+                publish / verify
             </h3>
         </div>
 
         <button
             type="button"
             on:click={handleConnectWallet}
-            class="px-6 py-1 rounded-full bg-indigo-600 hover:bg-indigo-800 text-white"
+            class="px-6 py-1 rounded-full bg-indigo-600 hover:bg-indigo-800 text-white text-lg"
         >
             {#if $userAddress && $networkId}
                 <i class="bi bi-gear-fill mr-2" />{$userAddress.slice(0, 6)}
