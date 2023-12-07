@@ -16,6 +16,7 @@
 		let reader = new FileReader();
 		reader.onload = () => {
 			let array = new Uint8Array(reader.result);
+			array = Array.from(array);
 			let hash = keccak256(array);
 			fileObject = {
 				name: file.name,

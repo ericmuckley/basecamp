@@ -1,4 +1,0 @@
-{
-  "/": ["src/routes/+layout.ts", "src/routes/+layout.ts"],
-  "/api/logs": ["src/routes/api/logs/+server.js"]
-}

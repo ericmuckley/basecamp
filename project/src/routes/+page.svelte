@@ -11,7 +11,7 @@
     import TopNavBar from '../lib/TopNavBar.svelte';
     import { onMount } from 'svelte';
 
-	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/settings.js';
+	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
 
 	let fileObject;
@@ -102,9 +102,6 @@
 
 	const handlePublish = async () => {
 
-		console.log("SUBMITING")
-		console.log(typeof fileObject.bytesArray,typeof fileObject.bytesArray[0])
-		console.log(fileObject.bytesArray)
 		const result =  await writeContract({
 			address: CONTRACT_ADDRESS,
 			abi: CONTRACT_METADATA.output.abi,
@@ -143,11 +140,19 @@
 			<div class="space-y-4 mt-3">
 				{#each logs as log}
 					<div class="rounded-2xl bg-slate-200 text-slate-600 px-6 py-6">
-						<p class="font-bold text-xl">{log.item.name}</p>
+						<div class="text-xs">
+							keccak256 {shortHash(log.item.hash)}
+						</div>
+						<div class="font-bold text-2xl my-2">
+							{log.item.name}
+						</div>
+						<div class="text-lg italic my-1">
+							{log.item.description}
+						</div>
 						<div class="text-xs">
 							{log.timestamp}
 						</div>
-						<div>
+						<div class="text-xs">
 							Published by
 							<a
 								href="{BLOCK_EXPLORER_URL}/address/{log.item.creator}"
@@ -157,7 +162,7 @@
 								<i class="bi bi-box-arrow-right ml-1" />
 							</a>						
 						</div>
-						<div>
+						<div class="text-xs">
 							<a
 								href="{BLOCK_EXPLORER_URL}/tx/{log.transactionHash}"
 								target="_blank"
@@ -167,12 +172,6 @@
 							</a>
 						</div>
 
-						<div class="text-lg italic my-1">
-							{log.item.description}
-						</div>
-						<div class="text-sm">
-							keccak256: {shortHash(log.item.hash)}
-						</div>
 
 					</div>
 				{/each}
