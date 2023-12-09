@@ -1,24 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 
-/*
-
-Suggested changes from Michael
-
-- enumerable set for all hashes, instead of array with counter
-- not error for hasExists, but maybe return true
-- do we actually need all the mappings, and addresses? whats the use case
-- emit events for new item creation, then you don't need to keep track of the other indexes/mappings
-
-- event should just contain name, hash, & creator
-*/
-
 pragma solidity ^0.8.20;
 
-//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
 
-
-contract Publisher {
+contract Publisher is ERC20 {
 
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -37,21 +24,30 @@ contract Publisher {
         bytes32 indexed _hash
     );
     
+    uint public rewardAmount = 1;
     mapping(bytes32 => Item) public hashInfo;
     mapping(address => bytes32[]) public hashListByCreator;
     EnumerableSet.AddressSet internal allCreators;
     EnumerableSet.Bytes32Set internal allHashes;
 
+
+    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {}
+
+
+    function testHash () public pure returns (bytes32) {
+        return keccak256(abi.encode([1,2,3]));
+    }
+
+    function testHash2 (bytes memory _input) public pure returns (bytes32) {
+        return keccak256(_input);
+    }
+
+
     function createItem (
         string calldata _name,
         string calldata _description,
-        uint8[] calldata _inputBytes
+        bytes32 _hash
     ) public returns (bytes32 itemHash, bool itemCreated) {
-
-        bytes32 _hash = keccak256(abi.encode(_inputBytes));
-
-        bool _itemCreated;
-
         if (hashInfo[_hash].hash != _hash) {
             allHashes.add(_hash);
             allCreators.add(msg.sender);
@@ -64,10 +60,11 @@ contract Publisher {
                 hash: _hash
             });
             hashInfo[_hash] = _item;
-            _itemCreated = true;
+            _mint(msg.sender, rewardAmount);
             emit ItemCreated(_name, msg.sender, _hash);
+            return (_hash, true);
         }
-        return (_hash, _itemCreated);
+        return (_hash, false);
     }
 
 

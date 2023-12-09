@@ -36,6 +36,7 @@
     "@openzeppelin/contracts": "^5.0.0",
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/html": "^2.7.1",
+    "helia": "^2.1.0",
     "viem": "^1.19.11",
     "wagmi": "^1.4.7"
   }
