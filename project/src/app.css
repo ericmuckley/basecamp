@@ -40,7 +40,7 @@
     @apply bg-white dark:bg-dark1 dark:bg-dark1 shadow-lg fixed w-full z-20 top-0 left-0;
   }
   main {
-    @apply dark:moving-bg px-10 py-24 w-full min-h-screen h-auto;
+    @apply moving-bg px-10 py-24 w-full min-h-screen h-auto;
   }
   a {
     @apply hovertext;
@@ -131,9 +131,9 @@
   }
 
   .moving-bg {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background: linear-gradient(-45deg, #3730a3, #6b21a8, #065f46);
     background-size: 400% 400%;
-    animation: gradient 5s ease infinite;
+    animation: gradient 6s ease infinite;
   }
 
   @keyframes gradient {

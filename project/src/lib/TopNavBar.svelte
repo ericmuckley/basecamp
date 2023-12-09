@@ -9,18 +9,18 @@
 
 
 <nav>
-    <div class="px-4 py-3 flex justify-between bg-indigo-200">
+    <div class="px-4 py-3 flex justify-between bg-indigo-900">
 
         <div>
-            <h3 class="text-indigo-600 cursor-default">
-                publish / verify
-            </h3>
+            <div class="text-gradient cursor-default font-bold text-3xl font-mono">
+                publish + verify
+            </div>
         </div>
 
         <button
             type="button"
             on:click={handleConnectWallet}
-            class="px-6 py-1 rounded-full bg-indigo-600 hover:bg-indigo-800 text-white text-lg"
+            class="login-button"
         >
             {#if $userAddress && $networkId}
                 <i class="bi bi-gear-fill mr-2" />{$userAddress.slice(0, 6)}

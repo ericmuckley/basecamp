@@ -77,6 +77,6 @@
 </script>
 
 <TopNavBar {handleConnectWallet} />
-<div class="px-8 py-24">
+<main class="px-8 py-24">
 	<slot />
-</div>
+</main>

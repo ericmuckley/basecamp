@@ -158,35 +158,41 @@
             </div>
 
         {:else if uploadedFile.isVerified === false}
-            <div class="mt-8" in:fly={{ y: -100, diration: 800 }}>
-                <h4 class="text-xl text-slate-600">
-                    This file has not been published onchain using the publisher contract
+            <div class="mt-8 bg-indigo-100 p-8 rounded-3xl" in:fly={{ y: -100, diration: 800 }}>
+                <h4 class="text-slate-600">
+                    This file has not been published onchain using the publisher contract.
+                    You can publush it now with a custom name and description.
                 </h4>
 
 
-                <div class="flex">
-                    <div>File title</div>
-                    <input
-                        type="text"
-                        placeholder="Enter filename here..."
-                        bind:value={uploadedFile.name}
-                    />                    
+                
+                <div class="text-slate-500 text-sm pl-3 mt-6">
+                    File title
                 </div>
-                <div class="flex mt-3">
-                    <div>File Description</div>
-                    <textarea
-                        rows="2"
-                        bind:value={uploadedFile.description}
-                        placeholder="Enter file description here..."
-                    ></textarea>
+                <input
+                    type="text"
+                    placeholder="Enter filename here..."
+                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-indigo-300 focus:borer-indigo-600 hover:border-indigo-400"
+                    bind:value={uploadedFile.name}
+                />                    
+
+                
+                <div class="text-slate-500 text-sm pl-3 mt-3">
+                    File Description
                 </div>
+                <textarea
+                    rows="2"
+                    bind:value={uploadedFile.description}
+                    placeholder="Enter file description here..."
+                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-indigo-300 focus:borer-indigo-600 hover:border-indigo-400"
+                ></textarea>
 
                 <button
                     type="button"
-                    class="mt-2 w-full rounded-full px-6 py-1 text-lg bg-indigo-600 hover:bg-indigo-800 text-white"
+                    class="mt-2 w-full rounded-full px-6 py-2 text-lg bg-indigo-600 hover:bg-indigo-800 text-white"
                     on:click={handlePublish}
                 >
-                    <i class="bi bi-file-earmark-lock-fill mr-2"/>Publish Now
+                    <i class="bi bi-lock mr-2"/>Publish Now
                 </button>                
             </div>
 

@@ -10,7 +10,7 @@
 
 </script>
 
-<div class="rounded-2xl bg-slate-100 border border-slate-200 text-slate-600 px-6 py-6 shadow-xl">
+<div class="rounded-2xl bg-white border border-slate-200 text-slate-600 px-6 py-6 shadow-xl">
     {#if log}
         <div class="text-xs">
             keccak256 {shortHash(log.item.hash)}

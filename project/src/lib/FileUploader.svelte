@@ -31,7 +31,7 @@
 
 <div class="flex items-center justify-center w-full">
 	<label
-		class="shadow-xl shadow-indigo-600 flex flex-col items-center justify-center w-full border-2 border-indigo-400 border-dashed rounded-full cursor-pointer hover:bg-indigo-100"
+		class="shadow-xl shadow-indigo-600 flex flex-col items-center justify-center w-full border-2 border-indigo-400 border-dashed rounded-3xl cursor-pointer hover:bg-indigo-100"
 	>
 		<div class="flex flex-col items-center justify-center pt-5 pb-6">
 			<p class="text-lg text-indigo-600 font-bold">Upload a file to verify or publish</p>

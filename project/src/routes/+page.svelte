@@ -84,7 +84,7 @@
 {#if $networkId === CHAIN_ID}
 
 
-	<div class="grid grid-cols-3 gap-4">
+	<div class="grid grid-cols-3 gap-8">
 
 		<div class="col-span-2">
 			{#if uploadedFile}
@@ -109,7 +109,7 @@
 
 
 		<div>
-			<div class="bg-slate-100 rounded-3xl p-8" in:fly={{ y: -80, duration: 800 }}>
+			<div class="bg-slate-50 rounded-3xl p-8" in:fly={{ y: -80, duration: 800 }}>
 				<h3>Recently published items</h3>
 				<p class="lead">
 					<a href="{BLOCK_EXPLORER_URL}address/{CONTRACT_ADDRESS}" target="_blank">
@@ -157,9 +157,9 @@
 {:else}
 
 	<div class="box shadow-xl shadow-indigo-600" in:fly={{ y: -80, duration: 800 }}>
-		<h3>Unsupported Network</h3>
+		<h3>No wallet connection</h3>
 		<p class="lead">
-			Please switch to the Base Goerli network to use this app.
+			Please connect your wallet and switch to the Base Goerli network to use this app.
 		</p>
 	</div>
 
@@ -167,7 +167,7 @@
 
 
 
-
+<!--
 {#if logs}
 	<div class="my-10">
 		<pre class="font-mono text-sm text-slate-600 bg-slate-100 rounded-2xl p-8">{JSON.stringify(logs, null, 4)}</pre>
@@ -175,3 +175,4 @@
 {:else}
 	<h3>No contract logs found</h3>
 {/if}
+-->
