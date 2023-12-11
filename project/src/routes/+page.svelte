@@ -156,7 +156,7 @@
 
 {:else}
 
-	<div class="box shadow-xl shadow-indigo-600" in:fly={{ y: -80, duration: 800 }}>
+	<div class="box shadow-xl" in:fly={{ y: -80, duration: 800 }}>
 		<h3>No wallet connection</h3>
 		<p class="lead">
 			Please connect your wallet and switch to the Base Goerli network to use this app.

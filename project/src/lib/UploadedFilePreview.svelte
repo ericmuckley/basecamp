@@ -85,13 +85,13 @@
 
 
 {#if uploadedFile}
-    <div class="box shadow-xl shadow-indigo-600">
+    <div class="box bg-slate-100 shadow-xl">
         <div class="flex justify-between">
             <h3>{uploadedFile.name}</h3>
             <div>
                 <button
                     type="button"
-                    class="text-xl text-indigo-500 hover:text-indigo-800"
+                    class="text-xl text-slate-600 hover:text-slate-900"
                     on:click={() => {
                         uploadedFile = null;
                     }}
@@ -116,9 +116,9 @@
                 {/each}
             </table>
         </div>
-
+        <hr  class="mt-6" />
         {#if uploadedFile.isVerified === true}
-            <div class="mt-8 rounded-3xl bg-emerald-100 p-6" in:fly={{ y: -100, diration: 800 }}>
+            <div class="mt-8" in:fly={{ y: -100, diration: 800 }}>
                 <h4 class="font-bold text-xl text-emerald-600">
                     <i class="bi bi-shield-fill-check mr-1" />
                     This file has been published onchain
@@ -158,7 +158,7 @@
             </div>
 
         {:else if uploadedFile.isVerified === false}
-            <div class="mt-8 bg-indigo-100 p-8 rounded-3xl" in:fly={{ y: -100, diration: 800 }}>
+            <div class="mt-8" in:fly={{ y: -100, diration: 800 }}>
                 <h4 class="text-slate-600">
                     This file has not been published onchain using the publisher contract.
                     You can publush it now with a custom name and description.
@@ -172,7 +172,7 @@
                 <input
                     type="text"
                     placeholder="Enter filename here..."
-                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-indigo-300 focus:borer-indigo-600 hover:border-indigo-400"
+                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-slate-500 focus:border-slate-800 hover:border-slate-600"
                     bind:value={uploadedFile.name}
                 />                    
 
@@ -184,20 +184,20 @@
                     rows="2"
                     bind:value={uploadedFile.description}
                     placeholder="Enter file description here..."
-                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-indigo-300 focus:borer-indigo-600 hover:border-indigo-400"
+                    class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border border-slate-500 focus:border-slate-800 hover:borderslate-600"
                 ></textarea>
 
                 <button
                     type="button"
-                    class="mt-2 w-full rounded-full px-6 py-2 text-lg bg-indigo-600 hover:bg-indigo-800 text-white"
+                    class="login-button py-2 mt-2 w-full text-xl"
                     on:click={handlePublish}
                 >
-                    <i class="bi bi-lock mr-2"/>Publish Now
+                    <i class="bi bi-send mr-2"/>Publish Now
                 </button>                
             </div>
 
         {:else}
-            <div class="animate-pulse flex space-x-4" in:fly={{ y: -100, diration: 800 }}>
+            <div class="animate-pulse flex space-x-4" in:fly={{ y: -100, duration: 800 }}>
                 <div class="flex-1 space-y-6 py-1">
                     <div class="h-2 bg-slate-600 rounded"></div>
                     <div class="h-6 bg-slate-600 rounded"></div>

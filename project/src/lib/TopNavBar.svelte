@@ -9,10 +9,10 @@
 
 
 <nav>
-    <div class="px-4 py-3 flex justify-between bg-indigo-900">
+    <div class="px-4 py-3 flex justify-between">
 
         <div>
-            <div class="text-gradient cursor-default font-bold text-3xl font-mono">
+            <div class="text-slate-300 cursor-default font-bold text-3xl font-mono">
                 publish + verify
             </div>
         </div>
@@ -23,7 +23,7 @@
             class="login-button"
         >
             {#if $userAddress && $networkId}
-                <i class="bi bi-gear-fill mr-2" />{$userAddress.slice(0, 6)}
+                <i class="bi bi-gear mr-2" />{$userAddress.slice(0, 6)}
             {:else}
                 <i class="bi bi-wallet mr-2" />Connect wallet
             {/if}
