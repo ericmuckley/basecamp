@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 
+// TODO
+// NFT standard instead of ERC20
+// token owner can version? and/or edit text descriptions?
+// IPFS storage?
+
 pragma solidity ^0.8.20;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/ERC721.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
 
-contract Publisher is ERC20 {
+contract Publisher is ERC721 {
 
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -23,15 +28,14 @@ contract Publisher is ERC20 {
         address indexed _creator,
         bytes32 indexed _hash
     );
-    
-    uint public rewardAmount = 1;
+
     mapping(bytes32 => Item) public hashInfo;
     mapping(address => bytes32[]) public hashListByCreator;
     EnumerableSet.AddressSet internal allCreators;
     EnumerableSet.Bytes32Set internal allHashes;
 
 
-    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {}
+    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
 
 
     function testHash () public pure returns (bytes32) {
@@ -59,8 +63,11 @@ contract Publisher is ERC20 {
                 creator: msg.sender,
                 hash: _hash
             });
+
+            //_mint(msg.sender, uint(_hash));
+            // TODO: figure out to to map each token ID to a hash
+
             hashInfo[_hash] = _item;
-            _mint(msg.sender, rewardAmount);
             emit ItemCreated(_name, msg.sender, _hash);
             return (_hash, true);
         }
