@@ -153,9 +153,7 @@
 			
 		</div>
 
-
 	</div>
-
 
 
 {:else}
@@ -168,15 +166,3 @@
 	</div>
 
 {/if}
-
-
-
-<!--
-{#if logs}
-	<div class="my-10">
-		<pre class="font-mono text-sm text-slate-600 bg-slate-100 rounded-2xl p-8">{JSON.stringify(logs, null, 4)}</pre>
-	</div>
-{:else}
-	<h3>No contract logs found</h3>
-{/if}
--->

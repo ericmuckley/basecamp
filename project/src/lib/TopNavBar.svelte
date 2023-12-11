@@ -1,9 +1,6 @@
 <script>
-
-    import { getAccount } from '@wagmi/core';
     import { userAddress, networkId } from '$lib/stores.js';
     import { BLOCK_EXPLORER_URL, CONTRACT_ADDRESS } from '$lib/contract_settings.js'
-    import Layout from '../routes/+layout.svelte';
 
     export let handleConnectWallet = () => {};
 </script>
@@ -27,11 +24,6 @@
             </div>                      
         </div>
 
-
-
-
-
-
         <button
             type="button"
             on:click={handleConnectWallet}
@@ -42,8 +34,6 @@
             {:else}
                 <i class="bi bi-wallet mr-5" />Connect wallet
             {/if}
-               
-
         </button>
 
     </div>

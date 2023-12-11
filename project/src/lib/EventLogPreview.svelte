@@ -1,6 +1,5 @@
 <script>
-
-    import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
+    import { BLOCK_EXPLORER_URL } from '$lib/contract_settings.js';
 
     export let log;
 
