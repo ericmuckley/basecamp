@@ -2,6 +2,7 @@
 
     import { getAccount } from '@wagmi/core';
     import { userAddress, networkId } from '$lib/stores.js';
+    import { BLOCK_EXPLORER_URL, CONTRACT_ADDRESS } from '$lib/contract_settings.js'
     import Layout from '../routes/+layout.svelte';
 
     export let handleConnectWallet = () => {};
@@ -11,21 +12,35 @@
 <nav>
     <div class="px-4 py-3 flex justify-between">
 
-        <div>
-            <div class="text-slate-300 cursor-default font-bold text-3xl font-mono">
+        <div class="flex space-x-6">
+            <div class="text-slate-300 cursor-default font-bold text-2xl font-mono">
                 publish + verify
-            </div>
+            </div>      
+            <div class="text-xl pt-1">
+                <a
+                    href="{BLOCK_EXPLORER_URL}address/{CONTRACT_ADDRESS}"
+                    target="_blank"
+                    class="text-sky-300 hover:text-sky-100"
+                >
+                    View contract<i class="bi bi-box-arrow-right ml-2" />
+                </a>
+            </div>                      
         </div>
+
+
+
+
+
 
         <button
             type="button"
             on:click={handleConnectWallet}
-            class="login-button"
+            class="login-button tracking-[0.1em]"
         >
             {#if $userAddress && $networkId}
-                <i class="bi bi-gear mr-2" />{$userAddress.slice(0, 6)}
+                <i class="bi bi-gear mr-5" />{$userAddress.slice(0, 6)}
             {:else}
-                <i class="bi bi-wallet mr-2" />Connect wallet
+                <i class="bi bi-wallet mr-5" />Connect wallet
             {/if}
                
 

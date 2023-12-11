@@ -1,16 +1,10 @@
 <script>
-
-	import { decodeEventLog, hexToBigInt } from 'viem';
-	import { readContract, writeContract } from '@wagmi/core';
-
+	import { readContract } from '@wagmi/core';
 	import { fly } from 'svelte/transition';
-	import Spinner from '$lib/Spinner.svelte';
 	import EventLogPreview from '$lib/EventLogPreview.svelte';
 	import UploadedFilePreview from '$lib/UploadedFilePreview.svelte';
 	import FileUploader from '$lib/FileUploader.svelte';
-	import { userAddress, networkId } from '$lib/stores.js';
-    import Layout from './+layout.svelte';
-    import TopNavBar from '../lib/TopNavBar.svelte';
+	import { networkId } from '$lib/stores.js';
     import { onMount } from 'svelte';
 
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
@@ -25,16 +19,9 @@
 	let uploadedFile;
 	let logs;
 	let contractFunctions = null;
-	let publishedItems;
 
-	
-	onMount(async () => {
-
-		//const helia = await createHelia();
-
-		//contractFunctions = getContractFunctions();
-		//console.log(contractFunctions);
-
+	const getLogs = async () => {
+		logs = null;
 		let res = await (await fetch("/api/logs")).json();
 		let rawLogs = res.logs.filter(x => x.eventName === "ItemCreated");
 		for (let i = 0; i < rawLogs.length; i++) {
@@ -49,8 +36,18 @@
 			rawLogs[i].item.blockCreated = Number(rawLogs[i].item.blockCreated);
     	};
 		logs = [...rawLogs];
-	});
+		console.log('logs', logs)
+	};
 
+	onMount(async () => {
+
+		getLogs();
+		//const helia = await createHelia();
+
+		//contractFunctions = getContractFunctions();
+		//console.log(contractFunctions);
+
+	});
 
 	/*
 	// Function to pin a file to the local IPFS node
@@ -84,12 +81,13 @@
 {#if $networkId === CHAIN_ID}
 
 
-	<div class="grid grid-cols-3 gap-8">
+	<div class="grid grid-cols-3 gap-12">
 
 		<div class="col-span-2">
+
 			{#if uploadedFile}
 				<div in:fly={{ y: -80, duration: 800 }}>
-					<UploadedFilePreview bind:uploadedFile />
+					<UploadedFilePreview bind:uploadedFile {getLogs} />
 				</div>
 			{:else}
 				<div in:fly={{ y: -80, duration: 800 }}>
@@ -109,14 +107,20 @@
 
 
 		<div>
-			<div class="bg-slate-50 rounded-3xl p-8" in:fly={{ y: -80, duration: 800 }}>
-				<h3>Recently published items</h3>
-				<p class="lead">
-					<a href="{BLOCK_EXPLORER_URL}address/{CONTRACT_ADDRESS}" target="_blank">
-						View contract on block explorer<i class="bi bi-box-arrow-right ml-2" />
-					</a>
-				</p>
-				<div class="space-y-4 mt-3">
+			<div class="bg-slate-50 rounded-3xl p-8 shadow-xl" in:fly={{ y: -80, duration: 800 }}>
+				<div class="flex justify-between space-x-4">
+					<h3>Recently published items</h3>
+					<button
+						type="button"
+						on:click={getLogs}
+						class="text-2xl text-sky-600 hover:text-sky-900"
+					>
+						<i class="bi bi-arrow-clockwise" />
+					</button>
+				</div>
+				
+
+				<div class="space-y-4 mt-6">
 					{#if logs && logs.length}
 						{#each logs as log}
 							<EventLogPreview {log} />
@@ -144,7 +148,7 @@
 							</div>
 						{/each}
 					{/if}
-				</div>		
+				</div>
 			</div>
 			
 		</div>

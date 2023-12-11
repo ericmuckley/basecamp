@@ -90,7 +90,7 @@
     @apply bg-darkgray shadow-lg shadow-darkgray border border-darkgray dark:shadow-accent dark:border-accent rounded-3xl w-[300px] whitespace-normal;
   }
   .login-button {
-    @apply font-mono rounded-full px-5 text-white bg-link hover:bg-linklight;
+    @apply font-mono rounded-full px-5 py-1 text-xl text-white bg-link hover:bg-linklight;
   }
   .gradient-bg {
     @apply bg-gradient-to-b to-accent from-bright;
@@ -109,12 +109,6 @@
     @apply rounded-3xl px-10 py-8 box-gradient;
   }
 
-  .modal {
-    @apply relative transform overflow-hidden text-left shadow-xl transition-all box;
-  }
-  .modal-backdrop {
-    @apply fixed inset-0 bg-slate-100 dark:bg-indigo-950 bg-opacity-90 transition-opacity dark:bg-opacity-90 dark:transition-opacity;
-  }
   .hovertext {
     @apply text-link hover:text-linklight;
   }
