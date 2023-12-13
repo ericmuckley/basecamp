@@ -1,12 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
 
-// TODO
-// NFT standard instead of ERC20
-// token owner can version? and/or edit text descriptions?
-// IPFS storage?
+
+/*
+Notes
+
+- to create a root item, use bytes32(0) = 
+0x0000000000000000000000000000000000000000000000000000000000000000
+for the parentHash.
+
+- sample data value ("hello") in bytes32:
+0x68656c6c6f000000000000000000000000000000000000000000000000000000
+
+*/
 
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/ERC721.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol";
 
@@ -15,89 +24,77 @@ contract Publisher is ERC721 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
+    error OnlyOwnerCanAddNewVersion(bytes32 parentHash);
+    error ParentHashHasNotBeenPublished(bytes32 parentHash);
+
+    event ItemCreated(
+        string _name,
+        address indexed _creator,
+        uint indexed _tokenId,
+        bytes32 indexed _hash
+    );
+
     struct Item {
         string name;
         string description;
         uint blockCreated;
         address creator;
+        uint tokenId;
         bytes32 hash;
+        bytes32 parentHash;
     }
 
-    event ItemCreated(
-        string indexed _name,
-        address indexed _creator,
-        bytes32 indexed _hash
-    );
-
+    uint public counter = 1;
+    mapping(uint => bytes32) public tokenIds;
     mapping(bytes32 => Item) public hashInfo;
-    mapping(address => bytes32[]) public hashListByCreator;
-    EnumerableSet.AddressSet internal allCreators;
     EnumerableSet.Bytes32Set internal allHashes;
 
-
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
-
-
-    function testHash () public pure returns (bytes32) {
-        return keccak256(abi.encode([1,2,3]));
-    }
-
-    function testHash2 (bytes memory _input) public pure returns (bytes32) {
-        return keccak256(_input);
-    }
-
 
     function createItem (
         string calldata _name,
         string calldata _description,
-        bytes32 _hash
-    ) public returns (bytes32 itemHash, bool itemCreated) {
+        bytes32 _hash,
+        bytes32 _parentHash
+    ) public {
+    
+        // only proceed if this file hash doesn't exist yet
         if (hashInfo[_hash].hash != _hash) {
-            allHashes.add(_hash);
-            allCreators.add(msg.sender);
-            hashListByCreator[msg.sender].push(_hash);
+
+            // ensure that the parent hash already exists in the registry
+            if (_parentHash != bytes32(0) && hashInfo[_parentHash].hash == bytes32(0)) {
+                revert ParentHashHasNotBeenPublished(_parentHash);
+            }
+
+            // ensure that only the owner of of the root file is allowed to version it
+            if (_parentHash != bytes32(0) && ownerOf(hashInfo[_parentHash].tokenId) != msg.sender) {
+                revert OnlyOwnerCanAddNewVersion(_parentHash);
+            }
+
             Item memory _item = Item({
                 name: _name,
                 description: _description,
                 blockCreated: block.number,
                 creator: msg.sender,
-                hash: _hash
+                tokenId: counter,
+                hash: _hash,
+                parentHash: _parentHash
             });
-
-            //_mint(msg.sender, uint(_hash));
-            // TODO: figure out to to map each token ID to a hash
-
+            _mint(msg.sender, counter);
+            allHashes.add(_hash);
+            tokenIds[counter] = _hash;
             hashInfo[_hash] = _item;
-            emit ItemCreated(_name, msg.sender, _hash);
-            return (_hash, true);
+            emit ItemCreated(_name, msg.sender, counter, _hash);
+            counter++;
         }
-        return (_hash, false);
     }
-
 
     function getItemByHash(bytes32 _hash) public view returns (Item memory) {
         return hashInfo[_hash];
     }
 
-    function getHashListByAddress(address _address) public view returns (bytes32[] memory) {
-        return hashListByCreator[_address];
-    }
-
     function getAllHashes() public view returns (bytes32[] memory) {
         return allHashes.values();
-    }
-
-    function getAllCreators() public view returns (address[] memory) {
-        return allCreators.values();
-    }
-
-    function getItemsByCreator(address _creatorAddress) public view returns (Item[] memory) {
-        bytes32[] memory _hashes = hashListByCreator[_creatorAddress];
-        Item[] memory _items = new Item[](_hashes.length);
-        for (uint i; i < _items.length; i++) {
-            _items[i] = hashInfo[_hashes[i]];
-        }
-        return _items;
     }
     
 }

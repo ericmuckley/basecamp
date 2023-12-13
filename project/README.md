@@ -13,3 +13,10 @@ To run the app locally, install dependencies in this directory with `npm i`. The
 Before pushing changes to git, perform code linting using `npx prettier . --write`.
 
 To create a production version of the app, use `npm run build`.
+
+
+### TODO
+* Deployment scripts
+    * [forge](https://www.alchemy.com/dapps/foundry-forge)
+    * [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)
+* IPFS integration using [Helia](https://github.com/ipfs/helia)
