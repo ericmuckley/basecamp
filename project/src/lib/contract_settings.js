@@ -1,6 +1,6 @@
 export const CHAIN_ID = 84531; // for Base Goerli chain
 
-export const CONTRACT_ADDRESS = "0xCC5Bb9b0F195e5d731ED9A5a483a491252e633be";
+export const CONTRACT_ADDRESS = "0x70253A39e8824a0a7276d3Ae007B1a5327028e71";
 
 export const BLOCK_EXPLORER_URL = "https://goerli.basescan.org/";
 
@@ -8,7 +8,7 @@ export const BLOCK_EXPLORER_API_URL = "https://api-goerli.basescan.org/";
 
 export const CONTRACT_METADATA = {
   compiler: {
-    version: "0.8.22+commit.4fc1097e",
+    version: "0.8.20+commit.a1b79de6",
   },
   language: "Solidity",
   output: {
@@ -30,6 +30,28 @@ export const CONTRACT_METADATA = {
         type: "constructor",
       },
       {
+        inputs: [
+          {
+            internalType: "bytes32",
+            name: "parentHash",
+            type: "bytes32",
+          },
+        ],
+        name: "OnlyOwnerCanAddNewVersion",
+        type: "error",
+      },
+      {
+        inputs: [
+          {
+            internalType: "bytes32",
+            name: "parentHash",
+            type: "bytes32",
+          },
+        ],
+        name: "ParentHashHasNotBeenPublished",
+        type: "error",
+      },
+      {
         anonymous: false,
         inputs: [
           {
@@ -41,13 +63,13 @@ export const CONTRACT_METADATA = {
           {
             indexed: true,
             internalType: "address",
-            name: "spender",
+            name: "approved",
             type: "address",
           },
           {
-            indexed: false,
+            indexed: true,
             internalType: "uint256",
-            name: "value",
+            name: "tokenId",
             type: "uint256",
           },
         ],
@@ -59,6 +81,31 @@ export const CONTRACT_METADATA = {
         inputs: [
           {
             indexed: true,
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+          {
+            indexed: true,
+            internalType: "address",
+            name: "operator",
+            type: "address",
+          },
+          {
+            indexed: false,
+            internalType: "bool",
+            name: "approved",
+            type: "bool",
+          },
+        ],
+        name: "ApprovalForAll",
+        type: "event",
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
             internalType: "string",
             name: "_name",
             type: "string",
@@ -68,6 +115,12 @@ export const CONTRACT_METADATA = {
             internalType: "address",
             name: "_creator",
             type: "address",
+          },
+          {
+            indexed: true,
+            internalType: "uint256",
+            name: "_tokenId",
+            type: "uint256",
           },
           {
             indexed: true,
@@ -95,9 +148,9 @@ export const CONTRACT_METADATA = {
             type: "address",
           },
           {
-            indexed: false,
+            indexed: true,
             internalType: "uint256",
-            name: "value",
+            name: "tokenId",
             type: "uint256",
           },
         ],
@@ -108,16 +161,29 @@ export const CONTRACT_METADATA = {
         inputs: [
           {
             internalType: "address",
-            name: "owner",
+            name: "to",
             type: "address",
           },
           {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "approve",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
             internalType: "address",
-            name: "spender",
+            name: "owner",
             type: "address",
           },
         ],
-        name: "allowance",
+        name: "balanceOf",
         outputs: [
           {
             internalType: "uint256",
@@ -129,38 +195,8 @@ export const CONTRACT_METADATA = {
         type: "function",
       },
       {
-        inputs: [
-          {
-            internalType: "address",
-            name: "spender",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "amount",
-            type: "uint256",
-          },
-        ],
-        name: "approve",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "account",
-            type: "address",
-          },
-        ],
-        name: "balanceOf",
+        inputs: [],
+        name: "counter",
         outputs: [
           {
             internalType: "uint256",
@@ -188,71 +224,15 @@ export const CONTRACT_METADATA = {
             name: "_hash",
             type: "bytes32",
           },
-        ],
-        name: "createItem",
-        outputs: [
           {
             internalType: "bytes32",
-            name: "itemHash",
+            name: "_parentHash",
             type: "bytes32",
           },
-          {
-            internalType: "bool",
-            name: "itemCreated",
-            type: "bool",
-          },
         ],
+        name: "createItem",
+        outputs: [],
         stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "decimals",
-        outputs: [
-          {
-            internalType: "uint8",
-            name: "",
-            type: "uint8",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "spender",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "subtractedValue",
-            type: "uint256",
-          },
-        ],
-        name: "decreaseAllowance",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getAllCreators",
-        outputs: [
-          {
-            internalType: "address[]",
-            name: "",
-            type: "address[]",
-          },
-        ],
-        stateMutability: "view",
         type: "function",
       },
       {
@@ -271,17 +251,17 @@ export const CONTRACT_METADATA = {
       {
         inputs: [
           {
-            internalType: "address",
-            name: "_address",
-            type: "address",
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
           },
         ],
-        name: "getHashListByAddress",
+        name: "getApproved",
         outputs: [
           {
-            internalType: "bytes32[]",
+            internalType: "address",
             name: "",
-            type: "bytes32[]",
+            type: "address",
           },
         ],
         stateMutability: "view",
@@ -320,60 +300,24 @@ export const CONTRACT_METADATA = {
                 type: "address",
               },
               {
+                internalType: "uint256",
+                name: "tokenId",
+                type: "uint256",
+              },
+              {
                 internalType: "bytes32",
                 name: "hash",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "parentHash",
                 type: "bytes32",
               },
             ],
             internalType: "struct Publisher.Item",
             name: "",
             type: "tuple",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "_creatorAddress",
-            type: "address",
-          },
-        ],
-        name: "getItemsByCreator",
-        outputs: [
-          {
-            components: [
-              {
-                internalType: "string",
-                name: "name",
-                type: "string",
-              },
-              {
-                internalType: "string",
-                name: "description",
-                type: "string",
-              },
-              {
-                internalType: "uint256",
-                name: "blockCreated",
-                type: "uint256",
-              },
-              {
-                internalType: "address",
-                name: "creator",
-                type: "address",
-              },
-              {
-                internalType: "bytes32",
-                name: "hash",
-                type: "bytes32",
-              },
-            ],
-            internalType: "struct Publisher.Item[]",
-            name: "",
-            type: "tuple[]",
           },
         ],
         stateMutability: "view",
@@ -410,32 +354,18 @@ export const CONTRACT_METADATA = {
             type: "address",
           },
           {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
             internalType: "bytes32",
             name: "hash",
             type: "bytes32",
           },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        name: "hashListByCreator",
-        outputs: [
           {
             internalType: "bytes32",
-            name: "",
+            name: "parentHash",
             type: "bytes32",
           },
         ],
@@ -446,16 +376,16 @@ export const CONTRACT_METADATA = {
         inputs: [
           {
             internalType: "address",
-            name: "spender",
+            name: "owner",
             type: "address",
           },
           {
-            internalType: "uint256",
-            name: "addedValue",
-            type: "uint256",
+            internalType: "address",
+            name: "operator",
+            type: "address",
           },
         ],
-        name: "increaseAllowance",
+        name: "isApprovedForAll",
         outputs: [
           {
             internalType: "bool",
@@ -463,7 +393,7 @@ export const CONTRACT_METADATA = {
             type: "bool",
           },
         ],
-        stateMutability: "nonpayable",
+        stateMutability: "view",
         type: "function",
       },
       {
@@ -480,13 +410,107 @@ export const CONTRACT_METADATA = {
         type: "function",
       },
       {
-        inputs: [],
-        name: "rewardAmount",
-        outputs: [
+        inputs: [
           {
             internalType: "uint256",
-            name: "",
+            name: "tokenId",
             type: "uint256",
+          },
+        ],
+        name: "ownerOf",
+        outputs: [
+          {
+            internalType: "address",
+            name: "",
+            type: "address",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "from",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "to",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+        ],
+        name: "safeTransferFrom",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "from",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "to",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "data",
+            type: "bytes",
+          },
+        ],
+        name: "safeTransferFrom",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "operator",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "approved",
+            type: "bool",
+          },
+        ],
+        name: "setApprovalForAll",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+      {
+        inputs: [
+          {
+            internalType: "bytes4",
+            name: "interfaceId",
+            type: "bytes4",
+          },
+        ],
+        name: "supportsInterface",
+        outputs: [
+          {
+            internalType: "bool",
+            name: "",
+            type: "bool",
           },
         ],
         stateMutability: "view",
@@ -506,45 +530,19 @@ export const CONTRACT_METADATA = {
         type: "function",
       },
       {
-        inputs: [],
-        name: "testHash",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
         inputs: [
-          {
-            internalType: "bytes",
-            name: "_input",
-            type: "bytes",
-          },
-        ],
-        name: "testHash2",
-        outputs: [
-          {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32",
-          },
-        ],
-        stateMutability: "pure",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "totalSupply",
-        outputs: [
           {
             internalType: "uint256",
             name: "",
             type: "uint256",
+          },
+        ],
+        name: "tokenIds",
+        outputs: [
+          {
+            internalType: "bytes32",
+            name: "",
+            type: "bytes32",
           },
         ],
         stateMutability: "view",
@@ -553,25 +551,20 @@ export const CONTRACT_METADATA = {
       {
         inputs: [
           {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
             internalType: "uint256",
-            name: "amount",
+            name: "tokenId",
             type: "uint256",
           },
         ],
-        name: "transfer",
+        name: "tokenURI",
         outputs: [
           {
-            internalType: "bool",
+            internalType: "string",
             name: "",
-            type: "bool",
+            type: "string",
           },
         ],
-        stateMutability: "nonpayable",
+        stateMutability: "view",
         type: "function",
       },
       {
@@ -588,18 +581,12 @@ export const CONTRACT_METADATA = {
           },
           {
             internalType: "uint256",
-            name: "amount",
+            name: "tokenId",
             type: "uint256",
           },
         ],
         name: "transferFrom",
-        outputs: [
-          {
-            internalType: "bool",
-            name: "",
-            type: "bool",
-          },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
       },
@@ -608,54 +595,57 @@ export const CONTRACT_METADATA = {
       events: {
         "Approval(address,address,uint256)": {
           details:
-            "Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `value` is the new allowance.",
+            "Emitted when `owner` enables `approved` to manage the `tokenId` token.",
+        },
+        "ApprovalForAll(address,address,bool)": {
+          details:
+            "Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.",
         },
         "Transfer(address,address,uint256)": {
           details:
-            "Emitted when `value` tokens are moved from one account (`from`) to another (`to`). Note that `value` may be zero.",
+            "Emitted when `tokenId` token is transferred from `from` to `to`.",
         },
       },
       kind: "dev",
       methods: {
-        "allowance(address,address)": {
-          details: "See {IERC20-allowance}.",
-        },
         "approve(address,uint256)": {
-          details:
-            "See {IERC20-approve}. NOTE: If `amount` is the maximum `uint256`, the allowance is not updated on `transferFrom`. This is semantically equivalent to an infinite approval. Requirements: - `spender` cannot be the zero address.",
+          details: "See {IERC721-approve}.",
         },
         "balanceOf(address)": {
-          details: "See {IERC20-balanceOf}.",
+          details: "See {IERC721-balanceOf}.",
         },
-        "decimals()": {
-          details:
-            "Returns the number of decimals used to get its user representation. For example, if `decimals` equals `2`, a balance of `505` tokens should be displayed to a user as `5.05` (`505 / 10 ** 2`). Tokens usually opt for a value of 18, imitating the relationship between Ether and Wei. This is the default value returned by this function, unless it's overridden. NOTE: This information is only used for _display_ purposes: it in no way affects any of the arithmetic of the contract, including {IERC20-balanceOf} and {IERC20-transfer}.",
+        "getApproved(uint256)": {
+          details: "See {IERC721-getApproved}.",
         },
-        "decreaseAllowance(address,uint256)": {
-          details:
-            "Atomically decreases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address. - `spender` must have allowance for the caller of at least `subtractedValue`.",
-        },
-        "increaseAllowance(address,uint256)": {
-          details:
-            "Atomically increases the allowance granted to `spender` by the caller. This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}. Emits an {Approval} event indicating the updated allowance. Requirements: - `spender` cannot be the zero address.",
+        "isApprovedForAll(address,address)": {
+          details: "See {IERC721-isApprovedForAll}.",
         },
         "name()": {
-          details: "Returns the name of the token.",
+          details: "See {IERC721Metadata-name}.",
+        },
+        "ownerOf(uint256)": {
+          details: "See {IERC721-ownerOf}.",
+        },
+        "safeTransferFrom(address,address,uint256)": {
+          details: "See {IERC721-safeTransferFrom}.",
+        },
+        "safeTransferFrom(address,address,uint256,bytes)": {
+          details: "See {IERC721-safeTransferFrom}.",
+        },
+        "setApprovalForAll(address,bool)": {
+          details: "See {IERC721-setApprovalForAll}.",
+        },
+        "supportsInterface(bytes4)": {
+          details: "See {IERC165-supportsInterface}.",
         },
         "symbol()": {
-          details:
-            "Returns the symbol of the token, usually a shorter version of the name.",
+          details: "See {IERC721Metadata-symbol}.",
         },
-        "totalSupply()": {
-          details: "See {IERC20-totalSupply}.",
-        },
-        "transfer(address,uint256)": {
-          details:
-            "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `amount`.",
+        "tokenURI(uint256)": {
+          details: "See {IERC721Metadata-tokenURI}.",
         },
         "transferFrom(address,address,uint256)": {
-          details:
-            "See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `amount`. - the caller must have allowance for ``from``'s tokens of at least `amount`.",
+          details: "See {IERC721-transferFrom}.",
         },
       },
       version: 1,
@@ -682,43 +672,72 @@ export const CONTRACT_METADATA = {
     remappings: [],
   },
   sources: {
-    "contracts/publisher.sol": {
+    "@openzeppelin/contracts/utils/Counters.sol": {
       keccak256:
-        "0x0fe60725d523f265017b630b7fea5c95c3154ea5f167fa3a21c11212f291291d",
-      license: "UNLICENSED",
+        "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+      license: "MIT",
       urls: [
-        "bzz-raw://ff4b9db99a86e5faae595c06e8a87adf37bfd9dbfcb6acd942c119e8055c427f",
-        "dweb:/ipfs/QmRubFULkgJGFiQAvAycpUJkQJAisnDuTymwzgyjpWseUF",
+        "bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+        "dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu",
       ],
     },
-    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/ERC20.sol":
+    "contracts/publisher.sol": {
+      keccak256:
+        "0x02337984d3b6be7d84c74a5bf3060b8d33291ff509fc26aa32b2c27e8a5b8be5",
+      license: "UNLICENSED",
+      urls: [
+        "bzz-raw://168c71a63793fb075683089e01501078762e314d8fe42c2c82058132ab4928ac",
+        "dweb:/ipfs/QmbV4SjvizfpHEb8mBroCT3QKv7XD6Zb9d3RZ2wovRc61F",
+      ],
+    },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/ERC721.sol":
       {
         keccak256:
-          "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+          "0x2c309e7df9e05e6ce15bedfe74f3c61b467fc37e0fae9eab496acf5ea0bbd7ff",
         license: "MIT",
         urls: [
-          "bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
-          "dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih",
+          "bzz-raw://7063b5c98711a98018ba4635ac74cee1c1cfa2ea01099498e062699ed9530005",
+          "dweb:/ipfs/QmeJ8rGXkcv7RrqLdAW8PCXPAykxVsddfYY6g5NaTwmRFE",
         ],
       },
-    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/IERC20.sol":
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/IERC721.sol":
       {
         keccak256:
-          "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+          "0x5bce51e11f7d194b79ea59fe00c9e8de9fa2c5530124960f29a24d4c740a3266",
         license: "MIT",
         urls: [
-          "bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
-          "dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53",
+          "bzz-raw://7e66dfde185df46104c11bc89d08fa0760737aa59a2b8546a656473d810a8ea4",
+          "dweb:/ipfs/QmXvyqtXPaPss2PD7eqPoSao5Szm2n6UMoiG8TZZDjmChR",
         ],
       },
-    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/extensions/IERC20Metadata.sol":
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/IERC721Receiver.sol":
       {
         keccak256:
-          "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+          "0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da",
         license: "MIT",
         urls: [
-          "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
-          "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8",
+          "bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708",
+          "dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/extensions/IERC721Metadata.sol":
+      {
+        keccak256:
+          "0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9",
+        license: "MIT",
+        urls: [
+          "bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146",
+          "dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/Address.sol":
+      {
+        keccak256:
+          "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+        license: "MIT",
+        urls: [
+          "bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+          "dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm",
         ],
       },
     "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/Context.sol":
@@ -729,6 +748,56 @@ export const CONTRACT_METADATA = {
         urls: [
           "bzz-raw://a367861093b74443b137564d3f3c472f70bcf114739e62059c939f25e315706c",
           "dweb:/ipfs/Qmd7JMpcxD9RuQjK3uM3EzJUgSqdN8vzp8eytEiuwxQJ6h",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/Strings.sol":
+      {
+        keccak256:
+          "0x3088eb2868e8d13d89d16670b5f8612c4ab9ff8956272837d8e90106c59c14a0",
+        license: "MIT",
+        urls: [
+          "bzz-raw://b81d9ff6559ea5c47fc573e17ece6d9ba5d6839e213e6ebc3b4c5c8fe4199d7f",
+          "dweb:/ipfs/QmPCW1bFisUzJkyjroY3yipwfism9RRCigCcK1hbXtVM8n",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/introspection/ERC165.sol":
+      {
+        keccak256:
+          "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+        license: "MIT",
+        urls: [
+          "bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+          "dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/introspection/IERC165.sol":
+      {
+        keccak256:
+          "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+        license: "MIT",
+        urls: [
+          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/math/Math.sol":
+      {
+        keccak256:
+          "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
+        license: "MIT",
+        urls: [
+          "bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+          "dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS",
+        ],
+      },
+    "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/utils/math/SignedMath.sol":
+      {
+        keccak256:
+          "0xf92515413956f529d95977adc9b0567d583c6203fc31ab1c23824c35187e3ddc",
+        license: "MIT",
+        urls: [
+          "bzz-raw://c50fcc459e49a9858b6d8ad5f911295cb7c9ab57567845a250bf0153f84a95c7",
+          "dweb:/ipfs/QmcEW85JRzvDkQggxiBBLVAasXWdkhEysqypj9EaB6H2g6",
         ],
       },
     "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v5.0/contracts/utils/structs/EnumerableSet.sol":

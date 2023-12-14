@@ -113,7 +113,7 @@
 					<button
 						type="button"
 						on:click={getLogs}
-						class="text-2xl text-sky-600 hover:text-sky-900"
+						class="text-2xl hovertext"
 					>
 						<i class="bi bi-arrow-clockwise" />
 					</button>

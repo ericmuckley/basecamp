@@ -1,5 +1,6 @@
 
 <script>
+    import { pad, toHex} from 'viem';
     import { readContract, writeContract, waitForTransaction, getNetwork } from '@wagmi/core';
     import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
     import { onMount } from 'svelte';
@@ -9,11 +10,13 @@
 
     export let getLogs = () => {};
     export let uploadedFile;
+    let selectedVersioning = 'versioning-root';
     let verifiedItem;
+    let parentHashInput = "";
 
     const progress = tweened(0.0, {duration: 6000, easing: cubicOut});
 
-	const FIELDS = [
+	const DISPLAY_FIELDS = [
 		{ field: 'name', label: 'Name' },
 		{ field: 'type', label: 'Type' },
 		{
@@ -46,6 +49,19 @@
         */
 	];
 
+    const VERSIONING_OPTIONS = [
+        {
+            id: 'root',
+            label: 'New root file',
+            description: "This file has not been published and no previous versions of it have been published",
+        },
+        {
+            id: 'version',
+            label: "New version of an existing file",
+            description: "This is a new version of a file that was previously published",
+        },
+    ];
+
 
     // when file is uploaded, check if it has previously been verified onchain
     onMount(async() => {
@@ -68,13 +84,21 @@
 	const handlePublish = async () => {
         progress.set(0.0);
         progress.set(0.1);
+
+        let parentHash = (selectedVersioning == 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
+
         const { chain } = getNetwork();
         const result =  await writeContract({
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_METADATA.output.abi,
             functionName: 'createItem',
             chainId: CHAIN_ID,
-            args: [uploadedFile.name, uploadedFile.description, uploadedFile.keccak256],
+            args: [
+                uploadedFile.name,
+                uploadedFile.description,
+                uploadedFile.keccak256,
+                parentHash,
+            ],
         });
         progress.set(0.9);
         const txnData = await waitForTransaction({
@@ -107,7 +131,7 @@
         </div>
         <div class="mt-6">
             <table class="border-spacing-y-4">
-                {#each FIELDS as field}
+                {#each DISPLAY_FIELDS as field}
                     <tr class="text-slate-600">
                         <td class="font-bold whitespace-nowrap pr-6">{field.label}</td>
                         <td>
@@ -193,6 +217,51 @@
                         placeholder="Enter file description here..."
                         class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
                     ></textarea>
+
+
+
+
+                    <ul class="grid grid-cols-2 w-full gap-6 my-4">
+                        {#each VERSIONING_OPTIONS as option}
+                            <li>
+                                <input
+                                    type="radio"
+                                    id="versioning-{option.id}"
+                                    name="versioning"
+                                    value="versioning-{option.id}"
+                                    class="hidden peer"
+                                    bind:group={selectedVersioning}
+                                    required
+                                >
+                                <label
+                                    for="versioning-{option.id}"
+                                    class="inline-flex items-center justify-between w-full px-6 py-3 border-2 border-slate-200 rounded-2xl cursor-pointer text-slate-400 peer-checked:border-sky-600 peer-checked:text-sky-600  hover:text-slate-600 hover:bg-slate-200"
+                                >                           
+                                    <div class="block">
+                                        <div class="w-full text font-bold">
+                                            {option.label}
+                                        </div>
+                                        <div class="w-full text-xs">
+                                            {option.description}
+                                        </div>
+                                    </div>
+                                </label>
+                            </li>
+                        {/each}
+                    </ul>
+                    {#if selectedVersioning == 'versioning-version'}
+                        <div in:fly={{ y: -20, duration: 200 }} class="mb-6">
+                            <div class="text-slate-500 text-sm pl-3 mt-6">
+                                Parent file hash
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Enter parent file keccak256 hash..."
+                                class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
+                                bind:value={parentHashInput}
+                            />                               
+                        </div>
+                    {/if}
 
                     <button
                         type="button"

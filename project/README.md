@@ -14,9 +14,11 @@ Before pushing changes to git, perform code linting using `npx prettier . --writ
 
 To create a production version of the app, use `npm run build`.
 
-
 ### TODO
-* Deployment scripts
-    * [forge](https://www.alchemy.com/dapps/foundry-forge)
-    * [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)
-* IPFS integration using [Helia](https://github.com/ipfs/helia)
+
+- UI display of token ownership
+- UI handing of custom solidity errors
+- Deployment scripts
+  - [forge](https://www.alchemy.com/dapps/foundry-forge)
+  - [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)
+- IPFS integration using [Helia](https://github.com/ipfs/helia)

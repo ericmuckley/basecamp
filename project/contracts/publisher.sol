@@ -1,18 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 
-
-/*
-Notes
-
-- to create a root item, use bytes32(0) = 
-0x0000000000000000000000000000000000000000000000000000000000000000
-for the parentHash.
-
-- sample data value ("hello") in bytes32:
-0x68656c6c6f000000000000000000000000000000000000000000000000000000
-
-*/
-
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
