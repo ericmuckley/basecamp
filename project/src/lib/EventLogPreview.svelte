@@ -3,6 +3,7 @@
     import { BLOCK_EXPLORER_URL } from '$lib/contract_settings.js';
 
     export let log;
+    export let logs;
     let hashCopied = false;
     let parentHashCopied = false;
 
@@ -32,7 +33,7 @@
     {#if log}
         <div class="text-sm flex justify-between">
             <a
-                href="{BLOCK_EXPLORER_URL}/tx/{log.transactionHash}"
+                href="{BLOCK_EXPLORER_URL}tx/{log.transactionHash}"
                 target="_blank"
             >
                 {shortHash(log.item.hash, 8)}
@@ -59,7 +60,15 @@
             {:else}
                 <div class="text-sm flex justify-between italic">
                     <div>
-                        Child version of {shortHash(log.item.parentHash, 8)}
+                        Child version of
+                        <a
+                            href="{BLOCK_EXPLORER_URL}tx/{logs.find(x => x.args._hash == log.item.parentHash).transactionHash}"
+                            target="_blank"
+                        >
+                            {shortHash(log.item.parentHash, 8)}
+                            <i class="bi bi-box-arrow-right ml-1" />
+                        </a>
+                        
                     </div>
                     <div class="text-slate-600">
                         {#if parentHashCopied}
@@ -80,19 +89,19 @@
 
 
 
-        <div class="font-bold text-2xl my-2">
+        <div class="font-bold text-xl my-2">
             {log.item.name}
         </div>
         {#if log.item.description && log.item.description.length}
-            <div class="text-xl italic my-1">
-                <i class="bi bi-card-text mr-1" />
+            <div class="text-sm italic my-1">
+                <i class="bi bi-info-circle-fill mr-1" />
                 {log.item.description}
             </div> 
         {/if}
-        <div class="text-sm mt-2">
+        <div class="text-xs">
             <i class="bi bi-calendar mr-2" />{log.timestamp}
         </div>
-        <div class="text-sm mt-1">
+        <div class="text-xs">
             <i class="bi bi-person-circle mr-2" />Published by
             <a
                 href="{BLOCK_EXPLORER_URL}/address/{log.item.creator}"

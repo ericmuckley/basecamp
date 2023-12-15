@@ -17,7 +17,6 @@ To create a production version of the app, use `npm run build`.
 ### TODO
 
 - UI display of token ownership
-- UI handing of custom solidity errors
 - Deployment scripts
   - [forge](https://www.alchemy.com/dapps/foundry-forge)
   - [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)

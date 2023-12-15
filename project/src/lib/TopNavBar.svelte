@@ -12,14 +12,12 @@
         <div class="flex space-x-6">
             <div class="text-slate-300 cursor-default font-bold text-2xl font-mono">
                 publish + verify
-            </div>      
-            <div class="text-xl pt-1">
                 <a
                     href="{BLOCK_EXPLORER_URL}address/{CONTRACT_ADDRESS}"
                     target="_blank"
                     class="text-sky-300 hover:text-sky-100"
                 >
-                    View contract<i class="bi bi-box-arrow-right ml-2" />
+                    <i class="bi bi-box-arrow-right ml-2" />
                 </a>
             </div>                      
         </div>

@@ -16,9 +16,14 @@
 	//const ipfs = new Helia({ url: 'http://127.0.0.1:8080' });
 
 
+	let logSearch = "";
 	let uploadedFile;
 	let logs;
 	let contractFunctions = null;
+
+	// TODO implement function for filtering logs
+	// TODO implement visualization of tokens by address
+	// TODO link published items to tokens
 
 	const getLogs = async () => {
 		logs = null;
@@ -41,16 +46,15 @@
 
 
 	const getTokenOwners = async () => {
-
+		// get current token counter
 		let tokenCounter = await readContract({
 			address: CONTRACT_ADDRESS,
 			abi: CONTRACT_METADATA.output.abi,
 			functionName: 'counter',
 			chainId: CHAIN_ID,
 		});
-
-		console.log(tokenCounter);
-
+		// index all the owners and their tokens
+		let owners = {}
 		for (let i = 1; i < Number(tokenCounter); i++) {
 			let owner = await readContract({
 				address: CONTRACT_ADDRESS,
@@ -59,8 +63,13 @@
 				chainId: CHAIN_ID,
 				args: [i],
 			});
-			console.log(owner)
-		}
+			if (owners.hasOwnProperty(owner)) {
+				owners[owner].push(i);
+			} else {
+				owners[owner] = [i];
+			};
+		};
+		console.log(owners);
 
 	};
 
@@ -134,7 +143,7 @@
 
 
 		<div>
-			<div class="bg-slate-50 rounded-3xl p-8 shadow-xl" in:fly={{ y: -80, duration: 800 }}>
+			<div class="bg-slate-100 rounded-3xl p-8 shadow-xl" in:fly={{ y: -80, duration: 800 }}>
 				<div class="flex justify-between space-x-4">
 					<h3>Recently published items</h3>
 					<button
@@ -145,14 +154,35 @@
 						<i class="bi bi-arrow-clockwise" />
 					</button>
 				</div>
+
+				<div class="flex mt-3">
+					<input
+						type="text"
+						placeholder="Search for published item..."
+						class="text-sm focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-300 focus:border-sky-600 hover:border-slate-400"
+						bind:value={logSearch}
+					/>
+					{#if logSearch.length}
+					<button
+						class="-ml-8 text-sky-600 hover:sky-800"
+						type="button"
+						on:click={() => {logSearch = ""}}
+					>
+						<i class="bi bi-x-lg" />
+					</button>
+					{/if}				
+				</div>
+
 				
 
 				<div class="space-y-4 mt-6">
 					{#if logs && logs.length}
 						{#each logs as log}
-							<EventLogPreview {log} />
+							{#if log.item.name.toLowerCase().includes(logSearch.toLowerCase()) }
+							<EventLogPreview {log} {logs} />
+							{/if}
 						{/each}
-					{:else if logs && logs.length === 0}
+					{:else if logs && logs.length === 0 && logSearch === ""}
 						<p class="lead mt-6">
 							No contract events have been logged.
 						</p>
