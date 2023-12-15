@@ -19,7 +19,10 @@
 	let logSearch = "";
 	let uploadedFile;
 	let logs;
+	let filteredLogs;
 	let contractFunctions = null;
+
+	$: logSearch, filterLogs();
 
 	// TODO implement function for filtering logs
 	// TODO implement visualization of tokens by address
