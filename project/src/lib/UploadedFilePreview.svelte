@@ -13,6 +13,7 @@
     let selectedVersioning = 'versioning-root';
     let verifiedItem;
     let parentHashInput = "";
+    let errorMessage;
 
     const progress = tweened(0.0, {duration: 6000, easing: cubicOut});
 
@@ -31,23 +32,8 @@
 		{ field: 'keccak256', label: 'Keccak256 Hash', format: (s) => {
             return `${s.slice(0, 24)}...${s.slice(s.length - 24, s.length)}`
         } },
-        /*
-		{
-			field: 'bytesArrayLength',
-			label: 'Bytes Array Length',
-			format: (x) => {
-				return x.toLocaleString();
-			}
-		},
-		{
-			field: 'bytesArray',
-			label: 'Bytes Array',
-			format: (x) => {
-				return `${x.slice(0, 8)}.......${x.slice(x.length - 8, x.length)}`;
-			}
-		}
-        */
 	];
+
 
     const VERSIONING_OPTIONS = [
         {
@@ -82,31 +68,43 @@
 
 
 	const handlePublish = async () => {
+        errorMessage = null;
         progress.set(0.0);
         progress.set(0.1);
-
         let parentHash = (selectedVersioning == 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
-
         const { chain } = getNetwork();
-        const result =  await writeContract({
-            address: CONTRACT_ADDRESS,
-            abi: CONTRACT_METADATA.output.abi,
-            functionName: 'createItem',
-            chainId: CHAIN_ID,
-            args: [
-                uploadedFile.name,
-                uploadedFile.description,
-                uploadedFile.keccak256,
-                parentHash,
-            ],
-        });
-        progress.set(0.9);
-        const txnData = await waitForTransaction({
-            hash: result.hash,
-            chain,
-        });
-        progress.set(0.0)
-        uploadedFile = null;
+        try {
+            const result =  await writeContract({
+                address: CONTRACT_ADDRESS,
+                abi: CONTRACT_METADATA.output.abi,
+                functionName: 'createItem',
+                chainId: CHAIN_ID,
+                args: [
+                    uploadedFile.name,
+                    uploadedFile.description,
+                    uploadedFile.keccak256,
+                    parentHash,
+                ],
+            });
+            progress.set(0.9);
+            const txnData = await waitForTransaction({
+                hash: result.hash,
+                chain,
+            });
+            progress.set(0.0)
+            uploadedFile = null;
+        } catch (error) {
+            progress.set(0.0);
+            console.log("ERROR:")
+            console.log(error.message);
+            if (error.message.includes("OnlyOwnerCanAddNewVersion")) {
+                errorMessage = "Only the owner of the root file can add new versions to it";
+            } else if (error.message.includes('ParentHashHasNotBeenPublished')) {
+                errorMessage = "The parent file hash you entered has not been published to this contract"
+            } else if (error.message.includes('does not match expected size')) {
+                errorMessage = "The parent hash value is not valid";
+            };
+        };
         getLogs();
     };
 
@@ -231,6 +229,7 @@
                                     value="versioning-{option.id}"
                                     class="hidden peer"
                                     bind:group={selectedVersioning}
+                                    on:input={() => {errorMessage = null}}
                                     required
                                 >
                                 <label
@@ -259,9 +258,22 @@
                                 placeholder="Enter parent file keccak256 hash..."
                                 class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
                                 bind:value={parentHashInput}
+                                on:input={() => {errorMessage = null}}
                             />                               
                         </div>
                     {/if}
+
+                    
+                    {#if errorMessage}
+                        <div
+                            in:fly={{ y: -100, duration: 800 }}
+                            class="my-6 rounded-3xl py-4 px-6 text-xl bg-rose-200 text-rose-800"
+                        >
+                            <i class="bi bi-exclamation-triangle-fill mr-1" />
+                            {errorMessage}
+                        </div>
+                    {/if}
+
 
                     <button
                         type="button"

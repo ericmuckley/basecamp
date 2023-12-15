@@ -28,7 +28,7 @@
 
 </script>
 
-<div class="rounded-2xl border border-slate-300 text-slate-600 px-6 py-6 shadow-lg">
+<div class="rounded-2xl border border-slate-300 text-slate-600 px-6 py-6">
     {#if log}
         <div class="text-sm flex justify-between">
             <a
@@ -55,11 +55,11 @@
         </div>
         <div>
             {#if log.item.parentHash == toHex(pad(0))}
-                <span class="text-slate-600">Root file</span>
+                <span class="text-slate-600 italic text-sm">Root file (no previous versions exist)</span>
             {:else}
-                <div class="text-sm flex justify-between">
+                <div class="text-sm flex justify-between italic">
                     <div>
-                        Child of {shortHash(log.item.parentHash, 8)}
+                        Child version of {shortHash(log.item.parentHash, 8)}
                     </div>
                     <div class="text-slate-600">
                         {#if parentHashCopied}

@@ -39,9 +39,36 @@
 		console.log('logs', logs)
 	};
 
+
+	const getTokenOwners = async () => {
+
+		let tokenCounter = await readContract({
+			address: CONTRACT_ADDRESS,
+			abi: CONTRACT_METADATA.output.abi,
+			functionName: 'counter',
+			chainId: CHAIN_ID,
+		});
+
+		console.log(tokenCounter);
+
+		for (let i = 1; i < Number(tokenCounter); i++) {
+			let owner = await readContract({
+				address: CONTRACT_ADDRESS,
+				abi: CONTRACT_METADATA.output.abi,
+				functionName: 'ownerOf',
+				chainId: CHAIN_ID,
+				args: [i],
+			});
+			console.log(owner)
+		}
+
+	};
+
+
 	onMount(async () => {
 
 		getLogs();
+		getTokenOwners();
 		//const helia = await createHelia();
 
 		//contractFunctions = getContractFunctions();
