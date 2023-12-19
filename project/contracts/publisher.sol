@@ -34,7 +34,6 @@ contract Publisher is ERC721 {
     uint public counter = 1;
     mapping(uint => bytes32) public tokenIds;
     mapping(bytes32 => Item) public hashInfo;
-    EnumerableSet.Bytes32Set internal allHashes;
 
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
 
@@ -68,7 +67,6 @@ contract Publisher is ERC721 {
                 parentHash: _parentHash
             });
             _mint(msg.sender, counter);
-            allHashes.add(_hash);
             tokenIds[counter] = _hash;
             hashInfo[_hash] = _item;
             emit ItemCreated(_name, msg.sender, counter, _hash);
@@ -78,10 +76,6 @@ contract Publisher is ERC721 {
 
     function getItemByHash(bytes32 _hash) public view returns (Item memory) {
         return hashInfo[_hash];
-    }
-
-    function getAllHashes() public view returns (bytes32[] memory) {
-        return allHashes.values();
     }
     
 }

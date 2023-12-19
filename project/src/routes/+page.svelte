@@ -1,9 +1,9 @@
 <script>
 	import { readContract } from '@wagmi/core';
 	import { fly } from 'svelte/transition';
-	import EventLogPreview from '$lib/EventLogPreview.svelte';
 	import UploadedFilePreview from '$lib/UploadedFilePreview.svelte';
 	import FileUploader from '$lib/FileUploader.svelte';
+	import LogsTable from '$lib/LogsTable.svelte';
 	import { networkId } from '$lib/stores.js';
     import { onMount } from 'svelte';
 
@@ -22,7 +22,7 @@
 	let filteredLogs;
 	let contractFunctions = null;
 
-	$: logSearch, filterLogs();
+	//$: logSearch, filterLogs();
 
 	// TODO implement function for filtering logs
 	// TODO implement visualization of tokens by address
@@ -120,35 +120,55 @@
 {#if $networkId === CHAIN_ID}
 
 
-	<div class="grid grid-cols-3 gap-12">
+	<div>
 
-		<div class="col-span-2">
+		{#if uploadedFile}
+			<div in:fly={{ y: -80, duration: 800 }}>
+				<UploadedFilePreview bind:uploadedFile {getLogs} />
+			</div>
+		{:else}
+			<div in:fly={{ y: -80, duration: 800 }}>
+				<FileUploader bind:uploadedFile />
+			</div>
+		{/if}
 
-			{#if uploadedFile}
-				<div in:fly={{ y: -80, duration: 800 }}>
-					<UploadedFilePreview bind:uploadedFile {getLogs} />
-				</div>
-			{:else}
-				<div in:fly={{ y: -80, duration: 800 }}>
-					<FileUploader bind:uploadedFile />
-				</div>
-			{/if}
-
-
-			{#if contractFunctions && 0}
-				<div class="box shadow-xl shadow-indigo-600 my-10" in:fly={{ y: -80, duration: 800 }}>
-					<h3>Contract functions</h3>
-					<pre class="font-mono text-sm text-slate-600 bg-slate-100 rounded-2xl p-8">{JSON.stringify(contractFunctions, null, 4)}</pre>
-				</div>
-			{/if}
-
-		</div>
+	</div>
 
 
-		<div>
-			<div class="bg-slate-100 rounded-3xl p-8 shadow-xl" in:fly={{ y: -80, duration: 800 }}>
-				<div class="flex justify-between space-x-4">
-					<h3>Recently published items</h3>
+	
+	<div
+		class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
+		in:fly={{ y: 100, duration: 800 }}
+	>
+		{#if logs}
+			<div>
+				<div class="flex justify-between mb-10">
+					<h3 class="mb-0 whitespace-nowrap">
+						Recently Published Items
+						<span class="rounded-full bg-slate-500 text-white font-bold ml-2 px-3">
+							{logs.length}
+						</span>
+					</h3>
+
+
+					<div class="flex w-full px-36">
+						<input
+							type="text"
+							placeholder="Search for published item..."
+							class="text-sm focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-300 focus:border-sky-600 hover:border-slate-400"
+							bind:value={logSearch}
+						/>
+						{#if logSearch.length}
+						<button
+							class="-ml-8 text-sky-600 hover:sky-800"
+							type="button"
+							on:click={() => {logSearch = ""}}
+						>
+							<i class="bi bi-x-lg" />
+						</button>
+						{/if}
+					</div>
+
 					<button
 						type="button"
 						on:click={getLogs}
@@ -158,62 +178,26 @@
 					</button>
 				</div>
 
-				<div class="flex mt-3">
-					<input
-						type="text"
-						placeholder="Search for published item..."
-						class="text-sm focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-300 focus:border-sky-600 hover:border-slate-400"
-						bind:value={logSearch}
-					/>
-					{#if logSearch.length}
-					<button
-						class="-ml-8 text-sky-600 hover:sky-800"
-						type="button"
-						on:click={() => {logSearch = ""}}
-					>
-						<i class="bi bi-x-lg" />
-					</button>
-					{/if}				
-				</div>
-
-				
-
-				<div class="space-y-4 mt-6">
-					{#if logs && logs.length}
-						{#each logs as log}
-							{#if log.item.name.toLowerCase().includes(logSearch.toLowerCase()) }
-							<EventLogPreview {log} {logs} />
-							{/if}
-						{/each}
-					{:else if logs && logs.length === 0 && logSearch === ""}
-						<p class="lead mt-6">
-							No contract events have been logged.
-						</p>
-					{:else}
-						{#each Array(6) as _, i}
-							<div class="border border-slate-200 shadow-xl rounded-3xl p-8 max-w-sm w-full mx-auto">
-								<div class="animate-pulse flex space-x-4">
-								<div class="flex-1 space-y-6 py-1">
-									<div class="h-2 bg-slate-600 rounded"></div>
-									<div class="h-6 bg-slate-600 rounded"></div>
-									<div class="space-y-3">
-									<div class="grid grid-cols-3 gap-4">
-										<div class="h-2 bg-slate-600 rounded col-span-2"></div>
-										<div class="h-2 bg-slate-600 rounded col-span-1"></div>
-									</div>
-									<div class="h-2 bg-slate-600 rounded"></div>
-									</div>
-								</div>
-								</div>
-							</div>
-						{/each}
-					{/if}
+				<div class="w-full overflow-x-auto">
+					<LogsTable {logs} filter={logSearch} />
 				</div>
 			</div>
-			
-		</div>
-
+		{:else}
+			<div class="space-y-3">
+				{#each Array(6) as _, _}
+					<div class="p-2 w-full">
+						<div class="animate-pulse">
+							<div class="h-4 bg-slate-600 rounded-3xl"></div>
+						</div>
+					</div>
+				{/each}				
+			</div>
+		{/if}
 	</div>
+
+	
+
+	
 
 
 {:else}
