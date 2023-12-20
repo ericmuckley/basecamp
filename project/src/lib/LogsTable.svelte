@@ -1,27 +1,33 @@
 <script>
     import CopyText from '$lib/CopyText.svelte';
 	import { BLOCK_EXPLORER_URL } from '$lib/contract_settings.js';
+    import { onMount } from 'svelte';
 
     export let logs;
     export let filter;
-
+    let filterField = "ID";
+    let filterDirection = -1;
+    let filteredLogs = [...logs];
+   
     const fields = [
         {
             label: "ID",
             wrap: false,
-            content: (log) => {return log.item.tokenId},
+            content: (log) => {return Number(log.item.tokenId)},
             display: (log) => {return Number(log.item.tokenId)},
         },
         {
             label: "Item name",
             wrap: true,
             icon: "file-earmark-fill",
+            content: (log) => {return log.item.name},
             display: (log) => {return log.item.name},
         },
         {
             label: "Item description",
             wrap: true,
             icon: 'card-text',
+            content: (log) => {return log.item.description},
             display: (log) => {return log.item.description},
         },
         {
@@ -29,6 +35,7 @@
             wrap: false,
             icon: 'qr-code',
             copy: (log) => {return log.item.hash},
+            content: (log) => {return log.item.hash},
             display: (log) => {
                 return `
                 <a href="${BLOCK_EXPLORER_URL}tx/${log.transactionHash}" target="_blank">
@@ -42,6 +49,7 @@
             wrap: false,
             icon: 'diagram-2-fill',
             copy: (log) => {return log.item.parentHash},
+            content: (log) => {return log.item.parentHash},
             display: (log) => {
                 let h = log.item.parentHash;
                 if ([...new Set(h)].length == 2) {
@@ -61,6 +69,7 @@
             wrap: false,
             icon: "person-circle",
             copy: (log) => {return log.item.creator},
+            content: (log) => {return log.item.creator},
             display: (log) => {
                 return `
                 <a href="${BLOCK_EXPLORER_URL}/address/${log.item.creator}" target="_blank">
@@ -73,30 +82,80 @@
             label: "Creation time",
             wrap: false,
             icon: "calendar",
+            content: (log) => {return log.timestamp},
             display: (log) => {return log.timestamp},
         },
 
-    ]
+    ];
+
+
+    onMount(() => {
+        filterAndSort();
+    })
+
+
+    $: filter, filterAndSort();
+
+
 
 	const shortHash = (s, n = 6) => {
 		return `${s.slice(0, n)}...${s.slice(s.length - n, s.length)}`;
 	};
 
+    function filterAndSort() {
+        // perform filtering
+        let filtered = [];
+        for (let log of logs) {
+            if (filter.trim().length) {
+                for (let field of fields) {
+                    if (field.content(log).toString().includes(filter)) {
+                        filtered.push(log);
+                        break;
+                    }
+                }
+            } else {
+                filtered.push(log);
+            }
+        }
+        // perform sorting
+        let content = fields.find(f => f.label === filterField).content;
+        if (filterDirection > 0) {
+            filtered.sort((a, b) => (content(a) > content(b)) ? 1 : ((content(b) > content(a)) ? -1 : 0));
+        } else {
+            filtered.sort((a, b) => (content(a) < content(b)) ? 1 : ((content(b) < content(a)) ? -1 : 0));
+        }
+        filteredLogs = [...filtered];
+    };
+
 </script>
+
 
 <table>
     <thead>
         {#each fields as field}
             <th>
-                {#if field.icon}
-                    <i class="bi bi-{field.icon} mr-1" />
-                {/if}
-                {field.label}
+                <button
+                    class="px-6 py-2 rounded-full {
+                    filterField == field.label ? 'bg-sky-300' : 'hover:bg-slate-200'}"
+                    on:click={() => {
+                        filterField = field.label;
+                        filterDirection = -filterDirection;
+                        filterAndSort();
+                    }}
+                >
+                    {#if filterField == field.label}
+                        <i class="bi bi-{filterDirection < 1 ? 'caret-down-fill': 'caret-up-fill' } mr-2" />
+                    {/if}
+                    {#if field.icon}
+                        <i class="bi bi-{field.icon} mr-1" />
+                    {/if}
+                    {field.label}                
+                </button>
             </th>
         {/each}
     </thead>
     <tbody>
-        {#each logs as log}
+        {#each filteredLogs as log}
             <tr>
                 {#each fields as field}
                     <td class="{field.wrap ? '' : 'whitespace-nowrap'}">

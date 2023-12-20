@@ -23,7 +23,6 @@
 				file: file,
 				description: "",
 			};
-			console.log(uploadedFile);
 		};
 		reader.readAsArrayBuffer(file);
 	};
@@ -33,8 +32,12 @@
 	<label
 		class="shadow-xl flex flex-col items-center justify-center w-full border-4 border-slate-400 border-dashed rounded-3xl cursor-pointer bg-slate-100 hover:bg-slate-200 hover:border-sky-800"
 	>
-		<div class="flex flex-col items-center justify-center pt-5 pb-6">
-			<p class="text-lg text-slate-600 font-bold">Upload a file to verify or publish</p>
+		<div class="flex justify-center pt-5 pb-6 space-x-8 text-2xl">
+			<i class="bi bi-upload" />
+			<p class="text-lg text-slate-600 font-bold pt-1">
+				Upload a file to verify or publish
+			</p>
+			<i class="bi bi-upload" />
 		</div>
 		<input type="file" class="hidden" on:change={(e) => onFileSelected(e)} />
 	</label>

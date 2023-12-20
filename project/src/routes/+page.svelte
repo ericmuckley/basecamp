@@ -127,7 +127,7 @@
 				<UploadedFilePreview bind:uploadedFile {getLogs} />
 			</div>
 		{:else}
-			<div in:fly={{ y: -80, duration: 800 }}>
+			<div in:fly={{ y: 80, duration: 800 }}>
 				<FileUploader bind:uploadedFile />
 			</div>
 		{/if}
@@ -151,7 +151,7 @@
 					</h3>
 
 
-					<div class="flex w-full px-36">
+					<div class="flex w-full px-12">
 						<input
 							type="text"
 							placeholder="Search for published item..."
