@@ -9,17 +9,10 @@
 
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
-	//import { Helia } from 'helia';
-
-	//import { createHelia } from 'helia'
-
-	//const ipfs = new Helia({ url: 'http://127.0.0.1:8080' });
-
 
 	let logSearch = "";
 	let uploadedFile;
 	let logs;
-	let filteredLogs;
 	let contractFunctions = null;
 
 	//$: logSearch, filterLogs();
@@ -81,36 +74,41 @@
 
 		getLogs();
 		getTokenOwners();
-		//const helia = await createHelia();
-
-		//contractFunctions = getContractFunctions();
-		//console.log(contractFunctions);
 
 	});
 
-	/*
-	// Function to pin a file to the local IPFS node
-	const pinFileToIPFS = async (fileInput) => {
-		try {
-			// Create a FormData object and append the file to it
-			const formData = new FormData();
-			formData.append('file', uploadedFile.file);
 
-			// Upload the file to IPFS using the add method
-			const uploadResponse = await ipfs.add(formData);
 
-			// Get the CID (Content Identifier) of the uploaded file
-			const cid = uploadResponse.cid.toString();
+	const handleTransfer = async () => {
+        errorMessage = null;
+        progress.set(0.0);
+        progress.set(0.1);
+        let parentHash = (selectedVersioning == 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
+        const { chain } = getNetwork();
+        try {
+            const result =  await writeContract({
+                address: CONTRACT_ADDRESS,
+                abi: CONTRACT_METADATA.output.abi,
+                functionName: 'safeTransferFrom',
+                chainId: CHAIN_ID,
+                args: [fromAddress, toAddress, tokenId],
+            });
+            progress.set(0.9);
+            const txnData = await waitForTransaction({
+                hash: result.hash,
+                chain,
+            });
+            progress.set(0.0)
+            uploadedFile = null;
+        } catch (error) {
+            progress.set(0.0);
+            console.log("ERROR:")
+            console.log(error.message);
+			errorMessage = error.message;
+        };
+        getLogs();
+    };
 
-			// Pin the file to the local IPFS node
-			await ipfs.pin.add(cid);
-
-			console.log(`File pinned successfully. CID: ${cid}`);
-		} catch (error) {
-			console.error('Error pinning file to IPFS:', error);
-		};
-	};
-	*/
 
 
 </script>
@@ -178,7 +176,7 @@
 					</button>
 				</div>
 
-				<div class="w-full overflow-x-auto">
+				<div class="w-full overflow-x-auto pb-3">
 					<LogsTable {logs} filter={logSearch} />
 				</div>
 			</div>
