@@ -4,7 +4,9 @@
 	import UploadedFilePreview from '$lib/UploadedFilePreview.svelte';
 	import FileUploader from '$lib/FileUploader.svelte';
 	import LogsTable from '$lib/LogsTable.svelte';
-	import { networkId } from '$lib/stores.js';
+	import TreeDiagram from '$lib/TreeDiagram.svelte';
+	import { networkId, userAddress } from '$lib/stores.js';
+	import { shortHash } from '$lib/utils.js';
     import { onMount } from 'svelte';
 
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
@@ -13,7 +15,11 @@
 	let logSearch = "";
 	let uploadedFile;
 	let logs;
+	let owners = {};
+	let selectedTokenId;
 	let contractFunctions = null;
+	let recipientAddress;
+	let transferError;
 
 	//$: logSearch, filterLogs();
 
@@ -50,7 +56,8 @@
 			chainId: CHAIN_ID,
 		});
 		// index all the owners and their tokens
-		let owners = {}
+		owners = {}
+		selectedTokenId = null;
 		for (let i = 1; i < Number(tokenCounter); i++) {
 			let owner = await readContract({
 				address: CONTRACT_ADDRESS,
@@ -65,8 +72,10 @@
 				owners[owner] = [i];
 			};
 		};
-		console.log(owners);
-
+		if (owners[$userAddress]) {
+			selectedTokenId = owners[$userAddress][0];
+		}
+		console.log('owners', owners);
 	};
 
 
@@ -78,8 +87,13 @@
 	});
 
 
-
 	const handleTransfer = async () => {
+
+		if (recipientAddress.length !== 42) {
+			transferError = "Invalid recipient address";
+			return;
+		};
+
         errorMessage = null;
         progress.set(0.0);
         progress.set(0.1);
@@ -91,7 +105,7 @@
                 abi: CONTRACT_METADATA.output.abi,
                 functionName: 'safeTransferFrom',
                 chainId: CHAIN_ID,
-                args: [fromAddress, toAddress, tokenId],
+                args: [$userAddress, recipientAddress, selectedTokenId],
             });
             progress.set(0.9);
             const txnData = await waitForTransaction({
@@ -111,26 +125,76 @@
 
 
 
+
+
 </script>
+
+
+<!--
+<TreeDiagram />	
+-->
 
 
 
 {#if $networkId === CHAIN_ID}
 
 
-	<div>
+	{#if uploadedFile}
+		<div in:fly={{ y: -80, duration: 800 }}>
+			<UploadedFilePreview bind:uploadedFile {getLogs} />
+		</div>
+	{:else}
+		<div in:fly={{ y: 80, duration: 800 }}>
+			<FileUploader bind:uploadedFile />
+		</div>
+	{/if}
 
-		{#if uploadedFile}
-			<div in:fly={{ y: -80, duration: 800 }}>
-				<UploadedFilePreview bind:uploadedFile {getLogs} />
-			</div>
-		{:else}
-			<div in:fly={{ y: 80, duration: 800 }}>
-				<FileUploader bind:uploadedFile />
-			</div>
-		{/if}
 
-	</div>
+
+	{#if owners[$userAddress] && logs}
+		<div
+			class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
+			in:fly={{ y: 100, duration: 800 }}
+		>
+			<h3>Token Owners</h3>
+			<pre>{JSON.stringify(owners, null, 4)}</pre>
+
+
+			<div class="mt-3">
+
+				<div class="text-slate-500 text-sm pl-3 mt-6">
+					Select an ownership token to transfer
+				</div>
+				<select
+					bind:value={selectedTokenId}
+					class="cursor-pointer focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
+				>
+					{#each owners[$userAddress] as tokenId}
+						<option value={tokenId}>
+							{tokenId}: {shortHash(logs.find(log => Number(log.item.tokenId) == tokenId).item.hash, 6)}
+						</option>
+					{/each}
+				</select>
+
+
+				<div class="text-slate-500 text-sm pl-3 mt-6">
+					Recipient
+				</div>
+				<input
+					type="text"
+					placeholder="Enter recipient's address here..."
+					class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
+					bind:value={recipientAddress}
+				/>      
+
+
+			</div>
+		
+		</div>
+
+
+	{/if}
+
 
 
 	
@@ -194,6 +258,7 @@
 	</div>
 
 	
+
 
 	
 

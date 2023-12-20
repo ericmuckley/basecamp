@@ -60,8 +60,8 @@
 	const handleWalletChange = () => {
 		let account = getAccount();
 		let network = getNetwork();
-		console.log('account', account)
-		console.log('network', network);
+		//console.log('account', account)
+		//console.log('network', network);
 		$userAddress = (account && account.address) ? account.address : null;
 		$networkId = (network && network.chain && network.chain.id) ? network.chain.id : null;
 	};

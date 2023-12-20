@@ -118,7 +118,7 @@
             <div>
                 <button
                     type="button"
-                    class="text-xl text-slate-600 hover:text-slate-900"
+                    class="text-xl hovertext"
                     on:click={() => {
                         uploadedFile = null;
                     }}

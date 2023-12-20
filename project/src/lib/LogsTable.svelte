@@ -1,6 +1,7 @@
 <script>
     import CopyText from '$lib/CopyText.svelte';
 	import { BLOCK_EXPLORER_URL } from '$lib/contract_settings.js';
+    import { shortHash } from '$lib/utils.js';
     import { onMount } from 'svelte';
 
     export let logs;
@@ -96,11 +97,6 @@
 
     $: filter, filterAndSort();
 
-
-
-	const shortHash = (s, n = 6) => {
-		return `${s.slice(0, n)}...${s.slice(s.length - n, s.length)}`;
-	};
 
     function filterAndSort() {
         // perform filtering
