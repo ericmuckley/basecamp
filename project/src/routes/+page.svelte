@@ -130,9 +130,15 @@
 </script>
 
 
-<!--
-<TreeDiagram />	
--->
+
+<div
+	class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl mb-12"
+	in:fly={{ y: 100, duration: 800 }}
+>
+	<TreeDiagram />	
+</div>
+
+
 
 
 

@@ -54,6 +54,19 @@
 }
 
 @layer components {
+
+  .link {
+    @apply fill-none stroke-sky-300 stroke-2;
+  }
+  .node circle {
+    @apply fill-sky-300 stroke-sky-600 stroke-[3px];
+  }
+  .node text {
+    @apply text-lg font-mono;
+  }
+
+
+
   .standard-text {
     @apply text-darkgray dark:text-lightgray;
   }
