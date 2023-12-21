@@ -62,7 +62,10 @@
     @apply fill-sky-300 stroke-sky-600 stroke-[3px];
   }
   .node text {
-    @apply text-lg font-mono;
+    @apply text-sm font-mono;
+  }
+  .active-node {
+    @apply stroke-red-600;
   }
 
 

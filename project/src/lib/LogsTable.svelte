@@ -6,6 +6,7 @@
 
     export let logs;
     export let filter;
+    export let owners;
     let filterField = "ID";
     let filterDirection = -1;
     let filteredLogs = [...logs];
@@ -32,6 +33,41 @@
             display: (log) => {return log.item.description},
         },
         {
+            label: "Creation time",
+            wrap: false,
+            icon: "calendar",
+            content: (log) => {return log.timestamp},
+            display: (log) => {return log.timestamp},
+        },
+        {
+            label: "Owner",
+            wrap: false,
+            icon: "person-fill-lock",
+            copy: (log) => {return owners.byTokenId[log.item.tokenId]},
+            content: (log) => {return owners.byTokenId[log.item.tokenId]},
+            display: (log) => {
+                return `
+                <a href="${BLOCK_EXPLORER_URL}/address/${owners.byTokenId[log.item.tokenId]}" target="_blank">
+                    ${shortHash(owners.byTokenId[log.item.tokenId], 6)}
+                    <i class="bi bi-box-arrow-up-right" />
+                </a>`
+            },
+        },
+        {
+            label: "Creator",
+            wrap: false,
+            icon: "person-add",
+            copy: (log) => {return log.item.creator},
+            content: (log) => {return log.item.creator},
+            display: (log) => {
+                return `
+                <a href="${BLOCK_EXPLORER_URL}/address/${log.item.creator}" target="_blank">
+                    ${shortHash(log.item.creator, 6)}
+                    <i class="bi bi-box-arrow-up-right" />
+                </a>`
+            },
+        },
+        {
             label: "Hash",
             wrap: false,
             icon: 'qr-code',
@@ -53,10 +89,10 @@
             content: (log) => {return log.item.parentHash},
             display: (log) => {
                 let h = log.item.parentHash;
-                if ([...new Set(h)].length == 2) {
+                if ([...new Set(h)].length === 2) {
                     return "";
                 } else {
-                    let parentTxn = logs.find(x => x.args._hash == log.item.parentHash).transactionHash;
+                    let parentTxn = logs.find(x => x.args._hash === log.item.parentHash).transactionHash;
                     return `
                     <a href="${BLOCK_EXPLORER_URL}tx/${parentTxn}" target="_blank">
                         ${shortHash(log.item.parentHash, 6)}
@@ -65,28 +101,6 @@
                 };
             },
         },
-        {
-            label: "Creator",
-            wrap: false,
-            icon: "person-circle",
-            copy: (log) => {return log.item.creator},
-            content: (log) => {return log.item.creator},
-            display: (log) => {
-                return `
-                <a href="${BLOCK_EXPLORER_URL}/address/${log.item.creator}" target="_blank">
-                    ${shortHash(log.item.creator, 6)}
-                    <i class="bi bi-box-arrow-up-right" />
-                </a>`
-            },
-        },
-        {
-            label: "Creation time",
-            wrap: false,
-            icon: "calendar",
-            content: (log) => {return log.timestamp},
-            display: (log) => {return log.timestamp},
-        },
-
     ];
 
 
@@ -131,15 +145,15 @@
         {#each fields as field}
             <th>
                 <button
-                    class="px-6 py-2 rounded-full {
-                    filterField == field.label ? 'bg-sky-300' : 'hover:bg-slate-200'}"
+                    class="px-5 py-2 rounded-full {
+                    filterField === field.label ? 'bg-sky-200' : 'hover:bg-slate-200'}"
                     on:click={() => {
                         filterField = field.label;
                         filterDirection = -filterDirection;
                         filterAndSort();
                     }}
                 >
-                    {#if filterField == field.label}
+                    {#if filterField === field.label}
                         <i class="bi bi-{filterDirection < 1 ? 'caret-down-fill': 'caret-up-fill' } mr-2" />
                     {/if}
                     {#if field.icon}
@@ -174,10 +188,10 @@
         @apply text-sm;
     }
     th {
-        @apply pr-6 py-2 text-slate-600 align-top text-left whitespace-nowrap border-b-2 border-slate-300;
+        @apply pr-1 py-2 text-slate-600 align-top text-left whitespace-nowrap border-b-2 border-slate-300;
     }
     td {
-        @apply pr-6 py-2 text-left align-top text-slate-600;
+        @apply pl-6 py-2 text-left align-top text-slate-600;
     }
     tr {
         @apply border-b border-slate-300;

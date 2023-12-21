@@ -71,7 +71,7 @@
         errorMessage = null;
         progress.set(0.0);
         progress.set(0.1);
-        let parentHash = (selectedVersioning == 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
+        let parentHash = (selectedVersioning === 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
         const { chain } = getNetwork();
         try {
             const result =  await writeContract({
@@ -248,7 +248,7 @@
                             </li>
                         {/each}
                     </ul>
-                    {#if selectedVersioning == 'versioning-version'}
+                    {#if selectedVersioning === 'versioning-version'}
                         <div in:fly={{ y: -20, duration: 200 }} class="mb-6">
                             <div class="text-slate-500 text-sm pl-3 mt-6">
                                 Parent file hash

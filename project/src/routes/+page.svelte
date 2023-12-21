@@ -4,9 +4,10 @@
 	import UploadedFilePreview from '$lib/UploadedFilePreview.svelte';
 	import FileUploader from '$lib/FileUploader.svelte';
 	import LogsTable from '$lib/LogsTable.svelte';
+	import SelectedItemPreview from '$lib/SelectedItemPreview.svelte';
 	import TreeDiagram from '$lib/TreeDiagram.svelte';
 	import { networkId, userAddress } from '$lib/stores.js';
-	import { shortHash } from '$lib/utils.js';
+	import { shortHash, NULL_ADDRESS } from '$lib/utils.js';
     import { onMount } from 'svelte';
 
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
@@ -15,11 +16,15 @@
 	let logSearch = "";
 	let uploadedFile;
 	let logs;
-	let owners = {};
-	let selectedTokenId;
-	let contractFunctions = null;
-	let recipientAddress;
-	let transferError;
+	//let selectedTokenId;
+	//let recipientAddress;
+	let treeData;
+	let selectedItem;
+	let isLoading = true;
+	let owners = {
+		byAddress: {},
+		byTokenId: {},
+	};	
 
 	//$: logSearch, filterLogs();
 
@@ -40,11 +45,44 @@
 				args: [rawLogs[i].args._hash],
 			});
 			rawLogs[i].item = item;
+			rawLogs[i].item.tokenId = Number(rawLogs[i].item.tokenId);
 			rawLogs[i].item.blockCreated = Number(rawLogs[i].item.blockCreated);
     	};
 		logs = [...rawLogs];
 		console.log('logs', logs)
 	};
+
+
+	const getTreeDataFromLogs = () => {
+		let data = {
+			"label": "Contract",
+			"hash": NULL_ADDRESS,
+			"children": getChildren(NULL_ADDRESS),
+			"type": "contract",
+		};
+		treeData = {...data};
+	};
+
+
+	function getChildren(parentHash) {
+		let result = [];
+		for (let log of logs) {
+			if (log.item.parentHash === parentHash) {
+				log.item.transactionHash = log.transactionHash;
+				log.item.timestamp = log.timestamp;
+				log.item.parentHashTxn = log.transactionHash
+				let child = {
+					...log.item,
+					"label": log.item.name,
+					"children": getChildren(log.item.hash),
+					"type": "item",
+				};
+				result.push(child);
+			}
+		}
+		return result;
+	}
+
 
 
 	const getTokenOwners = async () => {
@@ -56,8 +94,10 @@
 			chainId: CHAIN_ID,
 		});
 		// index all the owners and their tokens
-		owners = {}
-		selectedTokenId = null;
+		let tokenOwners = {
+			byAddress: {},
+			byTokenId: {},
+		}
 		for (let i = 1; i < Number(tokenCounter); i++) {
 			let owner = await readContract({
 				address: CONTRACT_ADDRESS,
@@ -66,77 +106,31 @@
 				chainId: CHAIN_ID,
 				args: [i],
 			});
-			if (owners.hasOwnProperty(owner)) {
-				owners[owner].push(i);
+			tokenOwners.byTokenId[i] = owner;
+			if (tokenOwners.byAddress.hasOwnProperty(owner)) {
+				tokenOwners.byAddress[owner].push(i);
 			} else {
-				owners[owner] = [i];
+				tokenOwners.byAddress[owner] = [i];
 			};
 		};
-		if (owners[$userAddress]) {
-			selectedTokenId = owners[$userAddress][0];
-		}
-		console.log('owners', owners);
+
+		return tokenOwners
 	};
 
 
 	onMount(async () => {
 
-		getLogs();
-		getTokenOwners();
+		await getLogs();
+		owners = await getTokenOwners();
+		getTreeDataFromLogs();
+		isLoading = false;
 
 	});
-
-
-	const handleTransfer = async () => {
-
-		if (recipientAddress.length !== 42) {
-			transferError = "Invalid recipient address";
-			return;
-		};
-
-        errorMessage = null;
-        progress.set(0.0);
-        progress.set(0.1);
-        let parentHash = (selectedVersioning == 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
-        const { chain } = getNetwork();
-        try {
-            const result =  await writeContract({
-                address: CONTRACT_ADDRESS,
-                abi: CONTRACT_METADATA.output.abi,
-                functionName: 'safeTransferFrom',
-                chainId: CHAIN_ID,
-                args: [$userAddress, recipientAddress, selectedTokenId],
-            });
-            progress.set(0.9);
-            const txnData = await waitForTransaction({
-                hash: result.hash,
-                chain,
-            });
-            progress.set(0.0)
-            uploadedFile = null;
-        } catch (error) {
-            progress.set(0.0);
-            console.log("ERROR:")
-            console.log(error.message);
-			errorMessage = error.message;
-        };
-        getLogs();
-    };
-
-
-
 
 
 </script>
 
 
-
-<div
-	class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl mb-12"
-	in:fly={{ y: 100, duration: 800 }}
->
-	<TreeDiagram />	
-</div>
 
 
 
@@ -145,129 +139,155 @@
 {#if $networkId === CHAIN_ID}
 
 
-	{#if uploadedFile}
-		<div in:fly={{ y: -80, duration: 800 }}>
-			<UploadedFilePreview bind:uploadedFile {getLogs} />
+	{#if isLoading}
+
+		<div class="space-y-6">
+			{#each Array(3) as _, _}
+				<div class="p-2 w-full">
+					<div class="animate-pulse">
+						<div class="h-12 bg-slate-600 rounded-3xl"></div>
+					</div>
+				</div>
+			{/each}
 		</div>
+
 	{:else}
-		<div in:fly={{ y: 80, duration: 800 }}>
-			<FileUploader bind:uploadedFile />
-		</div>
-	{/if}
+
+		{#if treeData}
+			<div
+				class="mt-12 bg-slate-100 rounded-3xl p-6 shadow-xl mb-12 relative overflow-x-auto overflow-y-auto"
+				in:fly={{ y: 100, duration: 800 }}
+			>
+				<h3>File version tree</h3>
+				{#if selectedItem}
+					<SelectedItemPreview bind:selectedItem />
+				{/if}
+				
+				<TreeDiagram data={treeData} bind:selectedItem />	
+			</div>
+		{/if}
+
+
+		{#if uploadedFile}
+			<div in:fly={{ y: -80, duration: 800 }}>
+				<UploadedFilePreview bind:uploadedFile {getLogs} />
+			</div>
+		{:else}
+			<div in:fly={{ y: 80, duration: 800 }}>
+				<FileUploader bind:uploadedFile />
+			</div>
+		{/if}
 
 
 
-	{#if owners[$userAddress] && logs}
+		<!--
+		{#if owners[$userAddress] && logs}
+			<div
+				class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
+				in:fly={{ y: 100, duration: 800 }}
+			>
+				<h3>Token Owners</h3>
+				<pre>{JSON.stringify(owners, null, 4)}</pre>
+
+
+				<div class="mt-3">
+
+					<div class="text-slate-500 text-sm pl-3 mt-6">
+						Select an ownership token to transfer
+					</div>
+					<select
+						bind:value={selectedTokenId}
+						class="cursor-pointer focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
+					>
+						{#each owners[$userAddress] as tokenId}
+							<option value={tokenId}>
+								{tokenId}: {shortHash(logs.find(log => Number(log.item.tokenId) === tokenId).item.hash, 6)}
+							</option>
+						{/each}
+					</select>
+
+
+					<div class="text-slate-500 text-sm pl-3 mt-6">
+						Recipient
+					</div>
+					<input
+						type="text"
+						placeholder="Enter recipient's address here..."
+						class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
+						bind:value={recipientAddress}
+					/>      
+
+
+				</div>
+			
+			</div>
+
+
+		{/if}
+		-->
+
+
+		
 		<div
 			class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
 			in:fly={{ y: 100, duration: 800 }}
 		>
-			<h3>Token Owners</h3>
-			<pre>{JSON.stringify(owners, null, 4)}</pre>
+			{#if logs}
+				<div>
+					<div class="flex justify-between mb-10">
+						<h3 class="mb-0 whitespace-nowrap">
+							Recently Published Items
+							<span class="rounded-full bg-slate-500 text-white font-bold ml-2 px-3">
+								{logs.length}
+							</span>
+						</h3>
 
 
-			<div class="mt-3">
+						<div class="flex w-full px-12">
+							<input
+								type="text"
+								placeholder="Search for published item..."
+								class="text-sm focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-300 focus:border-sky-600 hover:border-slate-400"
+								bind:value={logSearch}
+							/>
+							{#if logSearch.length}
+							<button
+								class="-ml-8 text-sky-600 hover:sky-800"
+								type="button"
+								on:click={() => {logSearch = ""}}
+							>
+								<i class="bi bi-x-lg" />
+							</button>
+							{/if}
+						</div>
 
-				<div class="text-slate-500 text-sm pl-3 mt-6">
-					Select an ownership token to transfer
+						<button
+							type="button"
+							on:click={getLogs}
+							class="text-2xl hovertext"
+						>
+							<i class="bi bi-arrow-clockwise" />
+						</button>
+					</div>
+
+					<div class="w-full overflow-x-auto pb-3">
+						<LogsTable {logs} filter={logSearch} {owners} />
+					</div>
 				</div>
-				<select
-					bind:value={selectedTokenId}
-					class="cursor-pointer focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
-				>
-					{#each owners[$userAddress] as tokenId}
-						<option value={tokenId}>
-							{tokenId}: {shortHash(logs.find(log => Number(log.item.tokenId) == tokenId).item.hash, 6)}
-						</option>
-					{/each}
-				</select>
-
-
-				<div class="text-slate-500 text-sm pl-3 mt-6">
-					Recipient
+			{:else}
+				<div class="space-y-3">
+					{#each Array(6) as _, _}
+						<div class="p-2 w-full">
+							<div class="animate-pulse">
+								<div class="h-4 bg-slate-600 rounded-3xl"></div>
+							</div>
+						</div>
+					{/each}				
 				</div>
-				<input
-					type="text"
-					placeholder="Enter recipient's address here..."
-					class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
-					bind:value={recipientAddress}
-				/>      
-
-
-			</div>
-		
+			{/if}
 		</div>
 
-
 	{/if}
-
-
-
-	
-	<div
-		class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
-		in:fly={{ y: 100, duration: 800 }}
-	>
-		{#if logs}
-			<div>
-				<div class="flex justify-between mb-10">
-					<h3 class="mb-0 whitespace-nowrap">
-						Recently Published Items
-						<span class="rounded-full bg-slate-500 text-white font-bold ml-2 px-3">
-							{logs.length}
-						</span>
-					</h3>
-
-
-					<div class="flex w-full px-12">
-						<input
-							type="text"
-							placeholder="Search for published item..."
-							class="text-sm focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-300 focus:border-sky-600 hover:border-slate-400"
-							bind:value={logSearch}
-						/>
-						{#if logSearch.length}
-						<button
-							class="-ml-8 text-sky-600 hover:sky-800"
-							type="button"
-							on:click={() => {logSearch = ""}}
-						>
-							<i class="bi bi-x-lg" />
-						</button>
-						{/if}
-					</div>
-
-					<button
-						type="button"
-						on:click={getLogs}
-						class="text-2xl hovertext"
-					>
-						<i class="bi bi-arrow-clockwise" />
-					</button>
-				</div>
-
-				<div class="w-full overflow-x-auto pb-3">
-					<LogsTable {logs} filter={logSearch} />
-				</div>
-			</div>
-		{:else}
-			<div class="space-y-3">
-				{#each Array(6) as _, _}
-					<div class="p-2 w-full">
-						<div class="animate-pulse">
-							<div class="h-4 bg-slate-600 rounded-3xl"></div>
-						</div>
-					</div>
-				{/each}				
-			</div>
-		{/if}
-	</div>
-
-	
-
-
-	
-
 
 {:else}
 
@@ -279,3 +299,4 @@
 	</div>
 
 {/if}
+
