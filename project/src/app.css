@@ -54,7 +54,6 @@
 }
 
 @layer components {
-
   .link {
     @apply fill-none stroke-sky-300 stroke-2;
   }
@@ -67,8 +66,6 @@
   .active-node {
     @apply stroke-red-600;
   }
-
-
 
   .standard-text {
     @apply text-darkgray dark:text-lightgray;
