@@ -21,10 +21,7 @@
 	let treeData;
 	let selectedItem;
 	let isLoading = true;
-	let owners = {
-		byAddress: {},
-		byTokenId: {},
-	};	
+	let owners = null;	
 
 	//$: logSearch, filterLogs();
 
@@ -160,9 +157,8 @@
 			>
 				<h3>File version tree</h3>
 				{#if selectedItem}
-					<SelectedItemPreview bind:selectedItem />
+					<SelectedItemPreview bind:selectedItem {owners} />
 				{/if}
-				
 				<TreeDiagram data={treeData} bind:selectedItem />	
 			</div>
 		{/if}
