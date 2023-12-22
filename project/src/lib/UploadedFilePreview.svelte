@@ -286,7 +286,7 @@
                 {:else}
 
                     <div>
-                        File submitted! Please confirm transaction in your wallet.
+                        Item submitted! Please confirm transaction in your wallet.
                     </div>
 
                     <div class="flex justify-between mt-3">

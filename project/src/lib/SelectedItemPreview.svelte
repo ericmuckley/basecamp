@@ -1,28 +1,27 @@
 <script>
     import { fly, slide } from 'svelte/transition';
+    import { tweened } from 'svelte/motion';
+    import { cubicOut } from 'svelte/easing';
     import CopyText from '$lib/CopyText.svelte';
     import { shortHash } from '$lib/utils.js';
     import { userAddress } from '$lib/stores.js'
+    import { writeContract, waitForTransaction, getNetwork } from '@wagmi/core';
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
     export let selectedItem;
     export let owners;
     let showTransferMenu = false;
-	let transferError;
-    let recipientAddress;
+	let errorMessage;
+    let recipientAddress = "";
+    let isTransferring = false;
 
-    /*
+    const progress = tweened(0.0, {duration: 6000, easing: cubicOut});
+
 	const handleTransfer = async () => {
-
-        if (recipientAddress.length !== 42) {
-            transferError = "Invalid recipient address";
-            return;
-        };
-
+        isTransferring = true;
         errorMessage = null;
         progress.set(0.0);
         progress.set(0.1);
-        let parentHash = (selectedVersioning === 'versioning-root' ) ? toHex(pad(0)) : parentHashInput;
         const { chain } = getNetwork();
         try {
             const result =  await writeContract({
@@ -30,27 +29,22 @@
                 abi: CONTRACT_METADATA.output.abi,
                 functionName: 'safeTransferFrom',
                 chainId: CHAIN_ID,
-                args: [$userAddress, recipientAddress, selectedTokenId],
+                args: [$userAddress, recipientAddress, selectedItem.tokenId],
             });
             progress.set(0.9);
             const txnData = await waitForTransaction({
                 hash: result.hash,
                 chain,
             });
+            location.reload();
             progress.set(0.0)
-            uploadedFile = null;
         } catch (error) {
-            progress.set(0.0);
+            //progress.set(0.0);
             console.log("ERROR:")
             console.log(error.message);
             errorMessage = error.message;
         };
-        getLogs();
     };
-    */
-
-
-
 
 </script>
 
@@ -140,14 +134,14 @@
 
 
             {#if owners.byTokenId[selectedItem.tokenId] === $userAddress}
-                <div class="mt-3">
+                <div class="mt-2">
                     <button
                         type="button"
                         class="hovertext text-sm"
                         on:click={() => {showTransferMenu = !showTransferMenu}}
                     >
-                        <i class="bi bi-chevron-down" />
                         Transfer ownership
+                        <i class="bi bi-chevron-{showTransferMenu ? 'up' : 'down'}" />
                     </button>
                 </div>
                 {#if showTransferMenu}
@@ -165,12 +159,33 @@
                             <button
                                 type="button"
                                 on:click={handleTransfer}
-                                class="bg-sky-600 hover:bg-sky-800 text-white font-bold whitespace-nowrap rounded-full px-4 py-1"
+                                class="ml-2 bg-sky-600 hover:bg-sky-800 text-white font-bold whitespace-nowrap rounded-full px-3 py-1 disabled:bg-slate-300 disabled:hover:bg-slate-300"
+                                disabled={recipientAddress.length !== 42 || isTransferring}
                             >
-                                <i class="bi bi-send mr-2" />Transfer
-                            </button>                            
+                                <i class="bi bi-send" />
+                            </button>
                         </div>
+                        {#if errorMessage}
+                            <div class="text-rose-600 mt-3" in:slide>
+                                {errorMessage}
+                            </div>
+                        {/if}
 
+                        {#if isTransferring && !errorMessage}
+                            <div class="mt-6" in:slide>
+                                <div class="flex justify-between mt-3">
+                                    {#each ["Confirming", "Submitting", "Finalizing"] as stage}
+                                        <div>{stage}</div>
+                                    {/each}
+                                </div>
+                                <div class="w-full bg-slate-300 rounded-full h-3">
+                                    <div
+                                        class="bg-sky-600 h-3 rounded-full"
+                                        style="width: {$progress * 100}%"
+                                    />
+                                </div>
+                            </div>
+                        {/if}
                     </div>
                 {/if}
             {/if}

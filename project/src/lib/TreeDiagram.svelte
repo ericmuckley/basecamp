@@ -190,6 +190,7 @@
                 d._children = null;
             }
             update(d);
+            selectedItem = null;
             selectedItem = {...d.data};
         }
     }
