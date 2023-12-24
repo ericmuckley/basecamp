@@ -89,13 +89,16 @@
         nodeEnter.append('text')
             .attr("dy", ".35em")
             .attr("x", (d) => {
-                return d.children || d._children ? 55 : 13;
+                //return d.children || d._children ? 55 : 13;
+                return -13;
             })
             .attr("y", (d) => {
-                return d.children || d._children ? -18 : 0;
+                //return d.children || d._children ? -18 : 0;
+                return -18;
             })
             .attr("text-anchor", (d) => {
-                return d.children || d._children ? "end" : "start";
+                //return d.children || d._children ? "end" : "start";
+                return "start";
             })
             .text((d) => { return d.data.label; });
 
@@ -129,11 +132,6 @@
 
         // On exit reduce the opacity of text labels
         nodeExit.select('text').style('fill-opacity', 1e-6);
-
-
-        //node.on("click", (d) => {
-        //    console.log(d)
-        //})
 
         // ****************** links section ***************************
 
@@ -190,7 +188,6 @@
                 d._children = null;
             }
             update(d);
-            selectedItem = null;
             selectedItem = {...d.data};
         }
     }

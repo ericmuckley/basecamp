@@ -3,16 +3,19 @@
     import { pad, toHex} from 'viem';
     import { readContract, writeContract, waitForTransaction, getNetwork } from '@wagmi/core';
     import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
+    import { shortHash, NULL_ADDRESS } from '$lib/utils.js';
     import { onMount } from 'svelte';
     import { fly } from 'svelte/transition';
     import { tweened } from 'svelte/motion';
     import { cubicOut } from 'svelte/easing';
+    import CopyButton from '$lib/CopyButton.svelte';
 
-    export let getLogs = () => {};
+    export let logs;
+    export let owners;
     export let uploadedFile;
     let selectedVersioning = 'versioning-root';
-    let verifiedItem;
     let parentHashInput = "";
+    let verifiedItem;
     let errorMessage;
 
     const progress = tweened(0.0, {duration: 6000, easing: cubicOut});
@@ -39,7 +42,7 @@
         {
             id: 'root',
             label: 'New root file',
-            description: "This file has not been published and no previous versions of it have been published",
+            description: "Neither this file not previous versions of it have been published",
         },
         {
             id: 'version',
@@ -49,8 +52,23 @@
     ];
 
 
+
+
+    
     // when file is uploaded, check if it has previously been verified onchain
     onMount(async() => {
+        // compare the uploaded file against the logs of previous files
+        verifiedItem = logs.find(log => log.item.hash.toLowerCase() === uploadedFile.keccak256.toLowerCase());
+        console.log("CHECKING")
+        console.log(logs.map(x => x.item.hash), uploadedFile.keccak256)
+        console.log(verifiedItem)
+
+        if (verifiedItem) {
+            let tokenId = verifiedItem.item.tokenId;
+            verifiedItem.owner = owners.byTokenId[tokenId];
+        };
+        /*
+        // In this version, we use a contract view function
         let item = await readContract({
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_METADATA.output.abi,
@@ -64,7 +82,9 @@
         } else {
             uploadedFile.isVerified = false;
         };
+        */
     });
+    
 
 
 	const handlePublish = async () => {
@@ -93,6 +113,7 @@
             });
             progress.set(0.0)
             uploadedFile = null;
+            location.reload();
         } catch (error) {
             progress.set(0.0);
             console.log("ERROR:")
@@ -105,7 +126,6 @@
                 errorMessage = "The parent hash value is not valid";
             };
         };
-        getLogs();
     };
 
 </script>
@@ -144,47 +164,96 @@
             </table>
         </div>
         <hr  class="mt-6" />
-        {#if uploadedFile.isVerified === true}
+
+        {#if verifiedItem}
             <div class="mt-8" in:fly={{ y: -100, duration: 800 }}>
-                <h4 class="font-bold text-xl text-emerald-600">
+                <h4 class="font-bold text-xl text-sky-600">
                     <i class="bi bi-shield-fill-check mr-1" />
-                    This file has been published onchain
+                    This item has been published
                 </h4>
                 <div class="mt-3">
-                    <table class="border-spacing-y-4">
-                        <tr class="text-slate-600">
+                    <table class="border-spacing-y-4 text-slate-600">
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Name</td>
+                            <td class="italic">{verifiedItem.item.name}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Description</td>
+                            <td class="italic">{verifiedItem.item.description}</td>
+                        </tr>                        
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Publication time</td>
+                            <td>
+                                {verifiedItem.timestamp}
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td class="font-bold whitespace-nowrap pr-6">Block published</td>
                             <td>
                                 <a
                                     target="_blank"
-                                    href="{BLOCK_EXPLORER_URL}/block/{Number(verifiedItem.blockCreated)}"
+                                    href="{BLOCK_EXPLORER_URL}/block/{Number(verifiedItem.item.blockCreated)}"
                                 >
-                                    {Number(verifiedItem.blockCreated)}
+                                    {Number(verifiedItem.item.blockCreated)}
                                     <i class="bi bi-box-arrow-right ml-1" />
                                 </a>
                             </td>
                         </tr>
-                        <tr class="text-slate-600">
+                        <tr>
                             <td class="font-bold whitespace-nowrap pr-6">Published by</td>
                             <td>
+                                <span class="mr-2">
+                                    <CopyButton text={verifiedItem.item.creator} />
+                                </span>
                                 <a
                                     target="_blank"
-                                    href="{BLOCK_EXPLORER_URL}/address/{verifiedItem.creator}"
+                                    href="{BLOCK_EXPLORER_URL}/address/{verifiedItem.item.creator}"
                                 >
-                                    {verifiedItem.creator.slice(0, 6)}
+                                    {verifiedItem.item.creator.slice(0, 6)}
                                     <i class="bi bi-box-arrow-right ml-1" />
                                 </a>
                             </td>
                         </tr>
-                        <tr class="text-slate-600">
-                            <td class="font-bold whitespace-nowrap pr-6">Description</td>
-                            <td class="italic">{verifiedItem.description}</td>
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Owner</td>
+                            <td>
+                                <span class="mr-2">
+                                    <CopyButton text={verifiedItem.owner} />
+                                </span>
+                                <a
+                                    target="_blank"
+                                    href="{BLOCK_EXPLORER_URL}/address/{verifiedItem.owner}"
+                                >
+                                    {verifiedItem.owner.slice(0, 6)}
+                                    <i class="bi bi-box-arrow-right ml-1" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Token ID</td>
+                            <td>{Number(verifiedItem.item.tokenId)}</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold whitespace-nowrap pr-6">Parent hash</td>
+                            <td>
+                                {#if verifiedItem.item.parentHash === NULL_ADDRESS }
+                                    <span class="italic text-slate-400">
+                                        This is a root file and has no parent
+                                    </span>
+                                {:else}
+                                    <span class="mr-2">
+                                        <CopyButton text={verifiedItem.item.parentHash} />
+                                    </span>
+                                    {shortHash(verifiedItem.item.parentHash, 6)}
+                                {/if}
+                            </td>
                         </tr>
                     </table>
                 </div>
             </div>
 
-        {:else if uploadedFile.isVerified === false}
+        {:else}
 
             <div class="mt-8" in:fly={{ y: -100, duration: 800 }}>
 
@@ -296,7 +365,7 @@
                     </div>
                     <div class="w-full bg-slate-300 rounded-full h-4">
                         <div
-                            class="bg-emerald-600 h-4 rounded-full"
+                            class="bg-sky-600 h-4 rounded-full"
                             style="width: {$progress * 100}%"
                         />
                     </div>
@@ -305,13 +374,6 @@
 
             </div>
 
-        {:else}
-            <div class="animate-pulse flex space-x-4" in:fly={{ y: -100, duration: 800 }}>
-                <div class="flex-1 space-y-6 py-1">
-                    <div class="h-2 bg-slate-600 rounded"></div>
-                    <div class="h-6 bg-slate-600 rounded"></div>
-                </div>
-            </div>
         {/if}
     </div>
 

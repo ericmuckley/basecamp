@@ -12,23 +12,16 @@
 
 	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
-
 	let logSearch = "";
 	let uploadedFile;
 	let logs;
-	//let selectedTokenId;
-	//let recipientAddress;
 	let treeData;
 	let selectedItem;
 	let isLoading = true;
-	let owners = null;	
+	let owners = null;
 
-	//$: logSearch, filterLogs();
 
-	// TODO implement function for filtering logs
-	// TODO implement visualization of tokens by address
-	// TODO link published items to tokens
-
+	// get all 'ItemCreated' contract event logs
 	const getLogs = async () => {
 		logs = null;
 		let res = await (await fetch("/api/logs")).json();
@@ -50,6 +43,7 @@
 	};
 
 
+	// organizes the log data into a tree structure for visualization
 	const getTreeDataFromLogs = () => {
 		let data = {
 			"label": "Contract",
@@ -61,6 +55,7 @@
 	};
 
 
+	// recursive function that gets the children of a parent hash
 	function getChildren(parentHash) {
 		let result = [];
 		for (let log of logs) {
@@ -81,7 +76,7 @@
 	}
 
 
-
+	// get the owners of all contract tokens
 	const getTokenOwners = async () => {
 		// get current token counter
 		let tokenCounter = await readContract({
@@ -91,10 +86,7 @@
 			chainId: CHAIN_ID,
 		});
 		// index all the owners and their tokens
-		let tokenOwners = {
-			byAddress: {},
-			byTokenId: {},
-		}
+		let tokenOwners = { byAddress: {}, byTokenId: {} };
 		for (let i = 1; i < Number(tokenCounter); i++) {
 			let owner = await readContract({
 				address: CONTRACT_ADDRESS,
@@ -116,20 +108,17 @@
 
 
 	onMount(async () => {
-
 		await getLogs();
 		owners = await getTokenOwners();
 		getTreeDataFromLogs();
 		isLoading = false;
-
 	});
-
 
 </script>
 
 
-{#if $networkId === CHAIN_ID}
 
+{#if $networkId === CHAIN_ID}
 
 	{#if isLoading}
 
@@ -152,7 +141,9 @@
 			>
 				<h3>File version tree</h3>
 				{#if selectedItem}
-					<SelectedItemPreview bind:selectedItem {owners} />
+					{#key selectedItem.name}
+						<SelectedItemPreview bind:selectedItem {owners} />
+					{/key}
 				{/if}
 				<TreeDiagram data={treeData} bind:selectedItem />	
 			</div>
@@ -161,62 +152,13 @@
 
 		{#if uploadedFile}
 			<div in:fly={{ y: -80, duration: 800 }}>
-				<UploadedFilePreview bind:uploadedFile {getLogs} />
+				<UploadedFilePreview bind:uploadedFile {logs} {owners} />
 			</div>
 		{:else}
 			<div in:fly={{ y: 80, duration: 800 }}>
 				<FileUploader bind:uploadedFile />
 			</div>
 		{/if}
-
-
-
-		<!--
-		{#if owners[$userAddress] && logs}
-			<div
-				class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
-				in:fly={{ y: 100, duration: 800 }}
-			>
-				<h3>Token Owners</h3>
-				<pre>{JSON.stringify(owners, null, 4)}</pre>
-
-
-				<div class="mt-3">
-
-					<div class="text-slate-500 text-sm pl-3 mt-6">
-						Select an ownership token to transfer
-					</div>
-					<select
-						bind:value={selectedTokenId}
-						class="cursor-pointer focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
-					>
-						{#each owners[$userAddress] as tokenId}
-							<option value={tokenId}>
-								{tokenId}: {shortHash(logs.find(log => Number(log.item.tokenId) === tokenId).item.hash, 6)}
-							</option>
-						{/each}
-					</select>
-
-
-					<div class="text-slate-500 text-sm pl-3 mt-6">
-						Recipient
-					</div>
-					<input
-						type="text"
-						placeholder="Enter recipient's address here..."
-						class="focus:outline-0 w-full rounded-xl px-4 py-1 bg-transparent border-2 border-slate-400 focus:border-sky-600 hover:border-slate-500"
-						bind:value={recipientAddress}
-					/>      
-
-
-				</div>
-			
-			</div>
-
-
-		{/if}
-		-->
-
 
 		
 		<div
@@ -232,7 +174,6 @@
 								{logs.length}
 							</span>
 						</h3>
-
 
 						<div class="flex w-full px-12">
 							<input

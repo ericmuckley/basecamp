@@ -1,5 +1,5 @@
 <script>
-    import CopyText from '$lib/CopyText.svelte';
+    import CopyButton from '$lib/CopyButton.svelte';
 	import { BLOCK_EXPLORER_URL } from '$lib/contract_settings.js';
     import { shortHash } from '$lib/utils.js';
     import { onMount } from 'svelte';
@@ -171,7 +171,7 @@
                     <td class="{field.wrap ? '' : 'whitespace-nowrap'}">
                         {#if field.copy && field.display(log).length}
                             <span class="mr-1">
-                                <CopyText text={field.copy(log)} />
+                                <CopyButton text={field.copy(log)} />
                             </span>
                         {/if}
                         {@html field.display(log)}

@@ -2,7 +2,7 @@
     import { fly, slide } from 'svelte/transition';
     import { tweened } from 'svelte/motion';
     import { cubicOut } from 'svelte/easing';
-    import CopyText from '$lib/CopyText.svelte';
+    import CopyButton from '$lib/CopyButton.svelte';
     import { shortHash } from '$lib/utils.js';
     import { userAddress } from '$lib/stores.js'
     import { writeContract, waitForTransaction, getNetwork } from '@wagmi/core';
@@ -51,8 +51,8 @@
 
 
 <div
-    in:fly={{ y:100, duration:300 }}
-    class="bg-slate-200 rounded-tr-3xl rounded-bl-3xl absolute top-0 right-0 px-5 py-4"
+    in:fly={{ y:100, duration:400 }}
+    class="bg-slate-200 bg-opacity-90 rounded-tr-3xl rounded-bl-3xl absolute top-0 right-0 px-5 py-4 w-96 shadow-lg"
 >
     <div class="flex justify-between space-x-6 mb-2">
         <div class="font-bold text-slate-600">
@@ -70,7 +70,7 @@
         {#if selectedItem.type === "contract"}
             <div>
                 <span class="mr-2">
-                    <CopyText text={CONTRACT_ADDRESS} />
+                    <CopyButton text={CONTRACT_ADDRESS} />
                 </span>
                 <a
                     href="{BLOCK_EXPLORER_URL}address/{CONTRACT_ADDRESS}"
@@ -97,7 +97,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="pr-3">Creator <CopyText text={selectedItem.creator}/></th>
+                        <th class="pr-3">Creator <CopyButton text={selectedItem.creator}/></th>
                         <td>
                             <a href="{BLOCK_EXPLORER_URL}/address/{selectedItem.creator}" target="_blank">
                                 {shortHash(selectedItem.creator, 6)}
@@ -106,7 +106,7 @@
                         </td>
                     </tr>	
                     <tr>
-                        <th class="pr-3">Owner <CopyText text={owners.byTokenId[selectedItem.tokenId]}/></th>
+                        <th class="pr-3">Owner <CopyButton text={owners.byTokenId[selectedItem.tokenId]}/></th>
                         <td>
                             <a href="{BLOCK_EXPLORER_URL}/address/{owners.byTokenId[selectedItem.tokenId]}" target="_blank">
                                 {shortHash(owners.byTokenId[selectedItem.tokenId], 6)}
@@ -115,7 +115,7 @@
                         </td>
                     </tr>              
                     <tr>
-                        <th class="pr-3">File hash <CopyText text={selectedItem.hash}/></th>
+                        <th class="pr-3">File hash <CopyButton text={selectedItem.hash}/></th>
                         <td>
                             <a href="{BLOCK_EXPLORER_URL}tx/{selectedItem.transactionHash}" target="_blank">
                                 {shortHash(selectedItem.hash, 6)}

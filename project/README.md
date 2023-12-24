@@ -16,12 +16,8 @@ To create a production version of the app, use `npm run build`.
 
 ### TODO
 
-- Fix Cutoff on viz
 - Display of all item details once matching file is uploaded
-- Viz of token versioning tree
-- Item details on selection in versioning tree
 - Testing parent Hash when parent hash is input on UI
-- UI display of token ownership
 - Deployment scripts
   - [forge](https://www.alchemy.com/dapps/foundry-forge)
   - [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)
