@@ -59,10 +59,6 @@
     onMount(async() => {
         // compare the uploaded file against the logs of previous files
         verifiedItem = logs.find(log => log.item.hash.toLowerCase() === uploadedFile.keccak256.toLowerCase());
-        console.log("CHECKING")
-        console.log(logs.map(x => x.item.hash), uploadedFile.keccak256)
-        console.log(verifiedItem)
-
         if (verifiedItem) {
             let tokenId = verifiedItem.item.tokenId;
             verifiedItem.owner = owners.byTokenId[tokenId];
@@ -349,7 +345,7 @@
                         class="login-button py-2 mt-2 w-full text-xl"
                         on:click={handlePublish}
                     >
-                        <i class="bi bi-send mr-2"/>Publish Now
+                        PUBLISH<i class="bi bi-send ml-3"/>
                     </button>
 
                 {:else}
