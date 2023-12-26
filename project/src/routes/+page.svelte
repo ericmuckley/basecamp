@@ -10,7 +10,7 @@
 	import { shortHash, NULL_ADDRESS } from '$lib/utils.js';
     import { onMount } from 'svelte';
 
-	import { CHAIN_ID, BLOCK_EXPLORER_URL, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
+	import { CHAIN_NAME, CHAIN_ID, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
 	let logSearch = "";
 	let uploadedFile;
@@ -134,21 +134,6 @@
 
 	{:else}
 
-		{#if treeData}
-			<div
-				class="mt-12 bg-slate-100 rounded-3xl p-6 shadow-xl mb-12 relative overflow-x-auto overflow-y-auto"
-				in:fly={{ y: 100, duration: 800 }}
-			>
-				<h3>File version tree</h3>
-				{#if selectedItem}
-					{#key selectedItem.name}
-						<SelectedItemPreview bind:selectedItem {owners} />
-					{/key}
-				{/if}
-				<TreeDiagram data={treeData} bind:selectedItem />	
-			</div>
-		{/if}
-
 
 		{#if uploadedFile}
 			<div in:fly={{ y: -80, duration: 800 }}>
@@ -161,11 +146,12 @@
 		{/if}
 
 		
-		<div
-			class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
-			in:fly={{ y: 100, duration: 800 }}
-		>
-			{#if logs}
+		{#if logs && logs.length}
+			<div
+				class="mt-12 bg-slate-100 rounded-3xl p-8 shadow-xl"
+				in:fly={{ y: 100, duration: 800 }}
+			>
+				
 				<div>
 					<div class="flex justify-between mb-10">
 						<h3 class="mb-0 whitespace-nowrap">
@@ -206,18 +192,27 @@
 						<LogsTable {logs} filter={logSearch} {owners} />
 					</div>
 				</div>
-			{:else}
-				<div class="space-y-3">
-					{#each Array(6) as _, _}
-						<div class="p-2 w-full">
-							<div class="animate-pulse">
-								<div class="h-4 bg-slate-600 rounded-3xl"></div>
-							</div>
-						</div>
-					{/each}				
-				</div>
-			{/if}
-		</div>
+			
+			</div>
+		{/if}
+
+
+
+		{#if logs && logs.length && treeData}
+			<div
+				class="mt-12 bg-slate-100 rounded-3xl p-6 shadow-xl mb-12 relative overflow-x-auto overflow-y-auto"
+				in:fly={{ y: 100, duration: 800 }}
+			>
+				<h3>File version tree</h3>
+				{#if selectedItem}
+					{#key selectedItem.name}
+						<SelectedItemPreview bind:selectedItem {owners} />
+					{/key}
+				{/if}
+				<TreeDiagram data={treeData} bind:selectedItem />	
+			</div>
+		{/if}
+
 
 	{/if}
 
@@ -226,7 +221,7 @@
 	<div class="box shadow-xl" in:fly={{ y: -80, duration: 800 }}>
 		<h3>No wallet connection</h3>
 		<p class="lead">
-			Please connect your wallet and switch to the Base Goerli network to use this app.
+			Please connect your wallet and switch to the {CHAIN_NAME} network to use this app.
 		</p>
 	</div>
 

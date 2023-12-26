@@ -23,7 +23,7 @@
 		InjectedConnector,
 		getNetwork,
 	} from '@wagmi/core';
-	import { mainnet, sepolia, base, baseGoerli, polygon, polygonMumbai } from '@wagmi/core/chains';
+	import { mainnet, sepolia, base, baseSepolia, polygon, polygonMumbai } from '@wagmi/core/chains';
 	import { CoinbaseWalletConnector } from '@wagmi/core/connectors/coinbaseWallet';
 	import { WalletConnectConnector } from '@wagmi/core/connectors/walletConnect';
 	//import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask';
@@ -31,7 +31,7 @@
 	import { Web3Modal } from '@web3modal/html';
 
 	// configure WalletConnect / Web3Modal
-	const chains = [mainnet, sepolia, base, baseGoerli, polygon, polygonMumbai];
+	const chains = [mainnet, sepolia, base, baseSepolia, polygon, polygonMumbai];
 	const { publicClient } = configureChains(chains, [
 		w3mProvider({ projectId: PUBLIC_WALLET_CONNECT_PROJECT_ID }),
 	]);

@@ -1,10 +1,12 @@
-export const CHAIN_ID = 84531; // for Base Goerli chain
+export const CHAIN_NAME = "Base Sepolia";
 
-export const CONTRACT_ADDRESS = "0x70253A39e8824a0a7276d3Ae007B1a5327028e71";
+export const CHAIN_ID = 84532;
 
-export const BLOCK_EXPLORER_URL = "https://goerli.basescan.org/";
+export const CONTRACT_ADDRESS = "0xd8E4d0C9a17B9E6b334A53da795474831aFAdB12";
 
-export const BLOCK_EXPLORER_API_URL = "https://api-goerli.basescan.org/";
+export const BLOCK_EXPLORER_URL = "https://sepolia.basescan.org/";
+
+export const BLOCK_EXPLORER_API_URL = "https://api-sepolia.basescan.org/";
 
 export const CONTRACT_METADATA = {
   compiler: {
@@ -233,19 +235,6 @@ export const CONTRACT_METADATA = {
         name: "createItem",
         outputs: [],
         stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getAllHashes",
-        outputs: [
-          {
-            internalType: "bytes32[]",
-            name: "",
-            type: "bytes32[]",
-          },
-        ],
-        stateMutability: "view",
         type: "function",
       },
       {
@@ -683,11 +672,11 @@ export const CONTRACT_METADATA = {
     },
     "contracts/publisher.sol": {
       keccak256:
-        "0x02337984d3b6be7d84c74a5bf3060b8d33291ff509fc26aa32b2c27e8a5b8be5",
+        "0x8335102b749635241e159c8790154600e67d0a5a4c0996fb686824533e6a60b0",
       license: "UNLICENSED",
       urls: [
-        "bzz-raw://168c71a63793fb075683089e01501078762e314d8fe42c2c82058132ab4928ac",
-        "dweb:/ipfs/QmbV4SjvizfpHEb8mBroCT3QKv7XD6Zb9d3RZ2wovRc61F",
+        "bzz-raw://76a3bfedb6737545396299810fffa290bc6cab137679254ecbe249c0051c2982",
+        "dweb:/ipfs/QmR9cDUXcD4XjvWXSHJqx6KQVSpRXUgJzLtmRjUzyCyiYs",
       ],
     },
     "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/ERC721.sol":

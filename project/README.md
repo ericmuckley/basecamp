@@ -2,7 +2,7 @@
 
 ### Contract
 
-The smart contract for this project is deployed to the [Base Goerli](https://goerli.basescan.org/) network.
+The smart contract for this project is deployed to the [Base Sepolia](https://sepolia.basescan.org/) network.
 
 ### User interface
 
@@ -16,8 +16,6 @@ To create a production version of the app, use `npm run build`.
 
 ### TODO
 
-- Display of all item details once matching file is uploaded
-- Testing parent Hash when parent hash is input on UI
 - Deployment scripts
   - [forge](https://www.alchemy.com/dapps/foundry-forge)
   - [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)

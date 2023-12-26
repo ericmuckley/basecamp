@@ -121,7 +121,7 @@
             if (error.message.includes("OnlyOwnerCanAddNewVersion")) {
                 errorMessage = "Only the owner of the root file can add new versions to it";
             } else if (error.message.includes('ParentHashHasNotBeenPublished')) {
-                errorMessage = "The parent file hash you entered has not been published to this contract"
+                errorMessage = "The parent file hash cannot be found"
             } else if (error.message.includes('does not match expected size')) {
                 errorMessage = "The parent hash value is not valid";
             };
