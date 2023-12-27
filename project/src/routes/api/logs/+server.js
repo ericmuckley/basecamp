@@ -25,7 +25,6 @@ const displayTimestamp = (unixTimestamp) => {
   const timestamp = `${d.getDate()} ${
     MONTHS[d.getMonth()]
   } ${d.getFullYear()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
-  console.log(timestamp)
   return timestamp;
 };
 

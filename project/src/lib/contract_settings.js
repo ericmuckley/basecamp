@@ -2,7 +2,7 @@ export const CHAIN_NAME = "Base Sepolia";
 
 export const CHAIN_ID = 84532;
 
-export const CONTRACT_ADDRESS = "0xd8E4d0C9a17B9E6b334A53da795474831aFAdB12";
+export const CONTRACT_ADDRESS = "0x3ab4dF9fDEA71eDe7dE1bAbe8f0CD10D709e5f1c";
 
 export const BLOCK_EXPLORER_URL = "https://sepolia.basescan.org/";
 
