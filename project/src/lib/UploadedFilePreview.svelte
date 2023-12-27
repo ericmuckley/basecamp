@@ -255,8 +255,9 @@
 
                 {#if $progress < 0.01}
 
-                    <h4 class="text-slate-600">
-                        This file has not been published to this contract.
+                    <h4 class="text-slate-600 text-xl text-sky-600">
+                        <i class="bi bi-info-circle mr-1" />
+                        <span class="font-bold">{uploadedFile.name}</span> has not been published to this contract.<br>
                         You can publish it now with a custom name and description.
                     </h4>
 

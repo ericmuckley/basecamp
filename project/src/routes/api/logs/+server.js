@@ -22,9 +22,10 @@ const displayTimestamp = (unixTimestamp) => {
     "Dec",
   ];
   const d = new Date(Number(unixTimestamp) * 1000);
-  return `${d.getDate()} ${
+  const timestamp = `${d.getDate()} ${
     MONTHS[d.getMonth()]
-  } ${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+  } ${d.getFullYear()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+  return timestamp;
 };
 
 const getLogs = async () => {

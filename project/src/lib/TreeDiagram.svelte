@@ -12,7 +12,7 @@
     let margin = {top: 20, right: 100, bottom: 20, left: 15};
     let width = 960 - margin.left - margin.right;
     let height = 500 - margin.top - margin.bottom;
-    let duration = 500;
+    let duration = 400;
     let treemap;
     let root;
     let svg;
@@ -62,7 +62,7 @@
         let links = treeData.descendants().slice(1);
 
         // Normalize for fixed-depth.
-        nodes.forEach((d) => {d.y = d.depth * 180});
+        nodes.forEach((d) => {d.y = d.depth * 200});
 
         // ****************** Nodes section ***************************
 
