@@ -10,6 +10,10 @@
 	import { shortHash, NULL_ADDRESS } from '$lib/utils.js';
     import { onMount } from 'svelte';
 
+
+	import { createHelia } from 'helia'
+	import { json } from '@helia/json'
+
 	import { CHAIN_NAME, CHAIN_ID, CONTRACT_ADDRESS, CONTRACT_METADATA } from '$lib/contract_settings.js';
 
 	let logSearch = "";
@@ -112,7 +116,30 @@
 		owners = await getTokenOwners();
 		getTreeDataFromLogs();
 		isLoading = false;
+
+
+		tryHelia();
 	});
+
+
+
+	const tryHelia = async () => {
+
+		const helia = await createHelia("http://localhost:5001/ipfs")
+		const heliaJson = json(helia)
+
+		const cid = await heliaJson.add({ hello: 'world' })
+
+		console.log('cid', cid)
+		//console.log(cid.asCID())
+
+		let retrieved = await heliaJson.get(cid)
+		console.log('retrived', retrieved)
+
+	}
+
+
+
 
 </script>
 

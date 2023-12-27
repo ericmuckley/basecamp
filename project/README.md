@@ -20,3 +20,11 @@ To create a production version of the app, use `npm run build`.
   - [forge](https://www.alchemy.com/dapps/foundry-forge)
   - [hardhat](https://hardhat.org/hardhat-runner/docs/getting-started)
 - IPFS integration using [Helia](https://github.com/ipfs/helia)
+
+
+### IPFS Terminal commands
+
+Using [Kubo implementation installed from binary distribution](https://docs.ipfs.tech/install/command-line/#system-requirements).
+
+* `ipfs id`: view peer ID and public key
+* `ipfs daemon`: runs local ipfs node instance. to interact with this node via the command line, use commands in a fresh terminal instance while the daemon is running. use `control-c` to terminate the daemon.
