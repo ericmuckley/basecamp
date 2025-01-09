@@ -1,12 +1,12 @@
-export const CHAIN_NAME = "Base Sepolia";
+export const CHAIN_NAME = "Base";
 
-export const CHAIN_ID = 84532;
+export const CHAIN_ID = 8453;
 
-export const CONTRACT_ADDRESS = "0x3ab4dF9fDEA71eDe7dE1bAbe8f0CD10D709e5f1c";
+export const CONTRACT_ADDRESS = "0x1EDaEe9ab127732028c0Bae86D156eE83f5e7EDD";
 
-export const BLOCK_EXPLORER_URL = "https://sepolia.basescan.org/";
+export const BLOCK_EXPLORER_URL = "https://basescan.org/";
 
-export const BLOCK_EXPLORER_API_URL = "https://api-sepolia.basescan.org/";
+export const BLOCK_EXPLORER_API_URL = "https://api.basescan.org/";
 
 export const CONTRACT_METADATA = {
   compiler: {
